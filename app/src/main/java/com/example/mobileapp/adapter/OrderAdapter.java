@@ -49,7 +49,7 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolder> 
         holder.tvName.setText(cart.getName());
         Locale locale = new Locale("vi", "VN"); // Thiết lập địa phương Việt Nam
         NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(locale);
-        holder.tvPrice.setText(currencyFormatter.format(cart.getSaleprice()));
+        holder.tvPrice.setText(currencyFormatter.format(cart.getSaleprice() * cart.getQuantity()));
         holder.tvQuantity.setText(cart.getQuantity() + "");
 
     }

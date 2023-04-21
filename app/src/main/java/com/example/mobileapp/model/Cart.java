@@ -1,21 +1,8 @@
 package com.example.mobileapp.model;
 
 public class Cart {
-    int id_sp;
     String img,name;
-
-    public int getId_sp() {
-        return id_sp;
-    }
-
-    public void setId_sp(int id_sp) {
-        this.id_sp = id_sp;
-    }
-
-    int saleprice,price,quantity;
-
-    public Cart() {
-    }
+    int price,saleprice,quantity,account_id;
 
     public String getImg() {
         return img;
@@ -33,14 +20,6 @@ public class Cart {
         this.name = name;
     }
 
-    public int getSaleprice() {
-        return saleprice;
-    }
-
-    public void setSaleprice(int saleprice) {
-        this.saleprice = saleprice;
-    }
-
     public int getPrice() {
         return price;
     }
@@ -49,11 +28,36 @@ public class Cart {
         this.price = price;
     }
 
+    public int getSaleprice() {
+        return saleprice;
+    }
+
+    public void setSaleprice(int saleprice) {
+        this.saleprice = saleprice;
+    }
+
     public int getQuantity() {
         return quantity;
     }
 
     public void setQuantity(int quantity) {
         this.quantity = quantity;
+    }
+
+    public int getAccount_id() {
+        return account_id;
+    }
+
+    public void setAccount_id(int account_id) {
+        this.account_id = account_id;
+    }
+
+    public Cart(String img, String name, int price, int saleprice, int quantity, int account_id) {
+        this.img = img;
+        this.name = name;
+        this.price = price;
+        this.saleprice = saleprice;
+        this.quantity = quantity;
+        this.account_id = account_id;
     }
 }

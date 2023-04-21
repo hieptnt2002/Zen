@@ -106,6 +106,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
                     viewHolder.tvPrice.setText(spannableString);
                     viewHolder.tvQuantity.setText(mCart.getQuantity()+"");
                     onClickQuantity.onCick();
+
                 }
             }
         });
