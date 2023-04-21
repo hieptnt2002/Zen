@@ -1,4 +1,4 @@
-package com.example.mobileapp.tesst;
+package com.example.mobileapp.view;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -7,10 +7,9 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -20,22 +19,23 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.mobileapp.R;
-import com.example.mobileapp.activity.CartActivity;
 import com.example.mobileapp.fragment.SmartphoneFragment;
 import com.example.mobileapp.fragment.HomeFragment;
 import com.example.mobileapp.fragment.LaptopFragment;
 import com.example.mobileapp.fragment.AccountFragment;
+import com.example.mobileapp.model.Account;
 import com.example.mobileapp.model.Cart;
 import com.example.mobileapp.utils.Utils;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.android.material.navigation.NavigationView;
-import com.nex3z.notificationbadge.NotificationBadge;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
-import java.util.ArrayList;
+import java.lang.reflect.Type;
+import java.util.List;
 
 public class ZenithActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
-    RecyclerView rvNavMenu;
     DrawerLayout mDrawerLayout;
     Toolbar mToolbar;
     public static final int FRAGMENT_HOME = 0;
@@ -45,8 +45,9 @@ public class ZenithActivity extends AppCompatActivity implements NavigationView.
     public int mCurrentFragment = FRAGMENT_HOME;
     NavigationView mNavigationView;
     BottomNavigationView bottomNavigationView;
-    TextView tv_num_cart;
+    TextView tv_num_cart, tvUsername;
     LinearLayout lnCart;
+    LinearLayout layoutLogout;
 
 
     @Override
@@ -55,15 +56,6 @@ public class ZenithActivity extends AppCompatActivity implements NavigationView.
         setContentView(R.layout.activity_zenith);
         initGUI();
 
-        rvNavMenu.setHasFixedSize(true);
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
-        rvNavMenu.setLayoutManager(layoutManager);
-
-        ArrayList<Nav_Menu> menuArrayList = new ArrayList<>();
-        menuArrayList.add(new Nav_Menu(R.drawable.tintuc, "Tin tức"));
-        menuArrayList.add(new Nav_Menu(R.drawable.gioithieu, "Cửa hàng"));
-        Nav_MenuAdapter nav_menuAdapter = new Nav_MenuAdapter(menuArrayList);
-        rvNavMenu.setAdapter(nav_menuAdapter);
 
         mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
@@ -77,12 +69,12 @@ public class ZenithActivity extends AppCompatActivity implements NavigationView.
         bottomNavigationView.getMenu().findItem(R.id.nav_home).setChecked(true);
         mNavigationView.setNavigationItemSelectedListener(this);
         eventClickBottomNav();
-        lnCart.setOnClickListener(view->
+        lnCart.setOnClickListener(view ->
                 startActivity(new Intent(ZenithActivity.this, CartActivity.class)));
     }
 
     private void initGUI() {
-        rvNavMenu = findViewById(R.id.nav_menu);
+
         mNavigationView = findViewById(R.id.nav_header);
         mDrawerLayout = findViewById(R.id.header_draw);
         mToolbar = findViewById(R.id.header_toolbar);
@@ -94,11 +86,56 @@ public class ZenithActivity extends AppCompatActivity implements NavigationView.
         lnCart = findViewById(R.id.linear_cart);
         tv_num_cart = findViewById(R.id.num_cart);
         tv_num_cart.setText(String.valueOf(Utils.listCart.size()));
-        Toast.makeText(this, tv_num_cart + "", Toast.LENGTH_SHORT).show();
+        View view = mNavigationView.getHeaderView(0);
+        tvUsername = view.findViewById(R.id.text_user);
+        layoutLogout = findViewById(R.id.layout_logout);
+
+        SharedPreferences prefts = getSharedPreferences(Utils.login_success, MODE_PRIVATE);
+        String object = prefts.getString("object", "");
+        Gson gson = new Gson();
+        if (object != null) {
+            Account account = gson.fromJson(object, Account.class);
+            tvUsername.setText(account.getName());
+            // Đọc chuỗi JSON từ SharedPreferences
+            SharedPreferences list = getSharedPreferences(account.getName(), MODE_PRIVATE);
+            String json = list.getString(account.getName(), null);
+            // Chuyển đổi chuỗi JSON thành ArrayList bằng Gson
+            Type type = new TypeToken<List<Cart>>() {
+            }.getType();
+            if (Utils.listCart.isEmpty() && json != null) {
+                Utils.listCart = gson.fromJson(json, type);
+                tv_num_cart.setText(String.valueOf(Utils.listCart.size()));
+            }
+            Toast.makeText(this, account.getId()+"", Toast.LENGTH_SHORT).show();
+        }else{
+            // Đọc chuỗi JSON từ SharedPreferences
+            SharedPreferences list = getSharedPreferences("saveCart", MODE_PRIVATE);
+            String json = list.getString("no_log", null);
+            // Chuyển đổi chuỗi JSON thành ArrayList bằng Gson
+            Type type = new TypeToken<List<Cart>>() {
+            }.getType();
+            if (Utils.listCart.isEmpty() && json != null) {
+                Utils.listCart = gson.fromJson(json, type);
+                tv_num_cart.setText(String.valueOf(Utils.listCart.size()));
+            }
+        }
+        layoutLogout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Utils.listCart.clear();
+                SharedPreferences.Editor editor = getSharedPreferences(Utils.login_success, MODE_PRIVATE).edit();
+                editor.putBoolean("isLoggedIn", false);
+                editor.remove("object");
+                editor.apply();
+                Intent intent = new Intent(getApplicationContext(), LoginMobileApp.class);
+                intent.putExtra("currentItem", 1);
+                startActivity(intent);
+            }
+        });
     }
 
     public void eventClickBottomNav() {
-            bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
+        bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()) {

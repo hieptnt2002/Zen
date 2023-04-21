@@ -1,4 +1,4 @@
-package com.example.mobileapp.activity;
+package com.example.mobileapp.view;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;

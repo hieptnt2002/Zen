@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activity.LoginMobileApp">
+    tools:context=".view.LoginMobileApp">
 
     <ImageView
         android:id="@+id/imageView3"
@@ -56,26 +56,36 @@
                 android:drawablePadding="10dp"
                 android:hint="Tên người dùng hoặc email"
                 android:maxLines="1"
+                android:lines="1"
                 android:paddingStart="15dp"
                 android:paddingEnd="15dp"
                 android:textColor="@color/black"
                 android:textColorHighlight="@color/cardview_dark_background" />
 
-            <EditText
-                android:id="@+id/textPassword"
+            <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:layout_marginTop="20dp"
-                android:background="@drawable/custom_editext"
-                android:drawableStart="@drawable/password"
-                android:drawablePadding="10dp"
-                android:paddingEnd="15dp"
-                android:maxLines="1"
-                android:hint="Mật khẩu"
-                android:inputType="textPassword"
-                android:paddingStart="15dp"
-                android:textColor="@color/black"
-                android:textColorHighlight="@color/cardview_dark_background" />
+                app:boxStrokeWidth="0dp"
+                app:passwordToggleEnabled="true"
+                app:hintEnabled="false">
+                <EditText
+                    android:id="@+id/text_Pass"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/custom_editext"
+                    android:drawableStart="@drawable/password"
+                    android:drawablePadding="15dp"
+                    android:hint="Mật khẩu"
+                    android:paddingTop="6dp"
+                    android:inputType="textPassword"
+                    android:maxLines="1"
+                    android:paddingStart="15dp"
+                    android:lines="1"
+                    android:paddingEnd="15dp"
+                    android:textColor="@color/black"
+                    android:textColorHighlight="@color/cardview_dark_background" />
+            </com.google.android.material.textfield.TextInputLayout>
 
 
             <Button

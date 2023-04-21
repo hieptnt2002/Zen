@@ -1,13 +1,13 @@
 package com.example.mobileapp.adapter;
 
+import static android.content.Context.MODE_PRIVATE;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.content.SharedPreferences;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.style.StrikethroughSpan;
-import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,19 +20,18 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.mobileapp.model.Account;
 import com.example.mobileapp.model.Cart;
 import com.example.mobileapp.model.Product;
 import com.example.mobileapp.R;
-import com.example.mobileapp.tesst.ZenithActivity;
 import com.example.mobileapp.utils.Utils;
+import com.google.gson.Gson;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Locale;
-
-import okhttp3.internal.Util;
 
 public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHolder> {
     ArrayList<Product> listProduct;
@@ -85,8 +84,6 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
         void onClickAddToCart();
     }
 
-    ;
-
     public void setOnClickAddToCart(OnClickAddCartListener mListener) {
         iClickAddCartListener = mListener;
     }
@@ -137,30 +134,28 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
                             int price = product.getGia_sp() * Utils.listCart.get(i).getQuantity();
                             Utils.listCart.get(i).setSaleprice(price);
                             flag = true;
+                            Utils.saveCart(context);
                         }
                     }
                     if (flag == false) {
-                        int price = product.getGia_km() * quantity;
-                        Cart cart = new Cart();
-                        cart.setImg(product.getAnh());
-                        cart.setPrice(product.getGia_sp());
-                        cart.setQuantity(quantity);
-                        cart.setName(product.getTen_sp());
-                        cart.setSaleprice(price);
-                        cart.setId_sp(product.getId());
-                        Utils.listCart.add(cart);
+                        SharedPreferences preferences = context.getSharedPreferences(Utils.login_success,MODE_PRIVATE);
+                        String json = preferences.getString("object","");
+                        Gson gson = new Gson();
+                        if(json != null){
+                            Account account = gson.fromJson(json,Account.class);
+                            Utils.listCart.add(new Cart(product.getAnh(),product.getTen_sp(),product.getGia_sp(),product.getGia_km(),1,account.getId()));
+                            Utils.saveCart(context);
+                        }
                     }
                 } else {
-                    int quantity = 1;
-                    int price = product.getGia_km() * quantity;
-                    Cart cart = new Cart();
-                    cart.setImg(product.getAnh());
-                    cart.setPrice(product.getGia_sp());
-                    cart.setQuantity(quantity);
-                    cart.setName(product.getTen_sp());
-                    cart.setSaleprice(price);
-                    cart.setId_sp(product.getId());
-                    Utils.listCart.add(cart);
+                    SharedPreferences preferences = context.getSharedPreferences(Utils.login_success,MODE_PRIVATE);
+                    String json = preferences.getString("object","");
+                    Gson gson = new Gson();
+                    if(json != null){
+                        Account account = gson.fromJson(json,Account.class);
+                        Utils.listCart.add(new Cart(product.getAnh(),product.getTen_sp(),product.getGia_sp(),product.getGia_km(),1,account.getId()));
+                        Utils.saveCart(context);
+                    }
                 }
 
                 Toast.makeText(context, Utils.listCart.size() + "", Toast.LENGTH_SHORT).show();

@@ -9,10 +9,9 @@ import android.widget.Button;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.mobileapp.R;
-import com.example.mobileapp.activity.LoginMobileApp;
+import com.example.mobileapp.view.LoginMobileApp;
 
 public class StartFragment extends Fragment {
     Button btnSignin, btnSignup;

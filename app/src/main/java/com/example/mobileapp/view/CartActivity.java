@@ -1,4 +1,4 @@
-package com.example.mobileapp.activity;
+package com.example.mobileapp.view;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -10,28 +10,14 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
-import com.example.mobileapp.constants.Constants;
 import com.example.mobileapp.R;
 import com.example.mobileapp.adapter.CartAdapter;
 import com.example.mobileapp.fragment.BottomSheetFragment;
-import com.example.mobileapp.model.Cart;
 import com.example.mobileapp.model.Order;
-import com.example.mobileapp.tesst.ZenithActivity;
 import com.example.mobileapp.utils.Utils;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.text.NumberFormat;
-import java.util.ArrayList;
 import java.util.Locale;
 
 public class CartActivity extends AppCompatActivity {
@@ -41,6 +27,9 @@ public class CartActivity extends AppCompatActivity {
     Locale locale = new Locale("vi", "VN"); // Thiết lập địa phương Việt Nam
     NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(locale);
     int total = 0;
+    CartAdapter cartAdapter;
+    BottomSheetFragment bottomSheetFragment;
+
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -56,8 +45,7 @@ public class CartActivity extends AppCompatActivity {
         });
         rvCart.setHasFixedSize(true);
         rvCart.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
-        CartAdapter cartAdapter = new CartAdapter(Utils.listCart,this);
-        rvCart.setAdapter(cartAdapter);
+
 
         if (Utils.listCart != null) {
             for (int i = 0; i < Utils.listCart.size(); i++) {
@@ -67,6 +55,8 @@ public class CartActivity extends AppCompatActivity {
         }
 
         tvTotal.setText(String.valueOf(currencyFormatter.format(total)));
+        cartAdapter = new CartAdapter(Utils.listCart,getApplicationContext());
+        rvCart.setAdapter(cartAdapter);
         cartAdapter.setOnClickQuantity(new CartAdapter.OnClickQuantity() {
             @Override
             public void onCick() {
@@ -78,10 +68,12 @@ public class CartActivity extends AppCompatActivity {
                     }
                 }
                 tvTotal.setText(String.valueOf(currencyFormatter.format(total)));
+                Utils.saveCart(getApplicationContext());
 
             }
         });
         clickToOrder();
+        if(Utils.listCart != null) Utils.saveCart(this);
     }
 
     private void initGUI() {
@@ -96,12 +88,12 @@ public class CartActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Order order = new Order(Utils.listCart, Utils.total_pay);
-                BottomSheetFragment bottomSheetFragment = BottomSheetFragment.newInstance(order);
+                bottomSheetFragment = BottomSheetFragment.newInstance(order);
                 bottomSheetFragment.show(getSupportFragmentManager(), bottomSheetFragment.getTag());
-//                bottomSheetFragment.setCancelable(false);
+                bottomSheetFragment.setCancelable(false);
+
             }
         });
     }
-
 
 }
