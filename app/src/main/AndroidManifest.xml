@@ -20,9 +20,12 @@
             android:exported="true" />
         <activity
             android:name=".view.ZenithActivity"
-            android:exported="true" >
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
-
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
         <activity
             android:name=".tesst.gacon"
@@ -32,16 +35,12 @@
             android:exported="true" />
         <activity
             android:name=".view.LoginMobileApp"
-            android:exported="true" > <intent-filter>
-            <action android:name="android.intent.action.MAIN" />
-
-            <category android:name="android.intent.category.LAUNCHER" />
-        </intent-filter></activity>
-        <activity
-            android:name=".view.SmartphoneActivity"
-            android:exported="true" />
+            android:exported="true"/>
         <activity
             android:name=".view.SignupMobileApp"
+            android:exported="true" />
+        <activity
+            android:name=".view.ProductDetails"
             android:exported="true" />
     </application>
 

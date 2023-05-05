@@ -1,19 +1,23 @@
 package com.example.mobileapp.model;
 
-public class Product {
+import java.io.Serializable;
+
+public class Product implements Serializable {
     int id;
     String anh,ten_sp;
     int gia_sp,gia_km;
     String mota,trangthai,quatang;
     int loaisp_id;
 
-    public Product(int id, String anh, String ten_sp, int gia_sp, int gia_km, String quatang) {
+    public Product(int id, String anh, String ten_sp, int gia_sp, int gia_km, String quatang,String mota,int loaisp_id) {
         this.id = id;
         this.anh = anh;
         this.ten_sp = ten_sp;
         this.gia_sp = gia_sp;
         this.gia_km = gia_km;
         this.quatang = quatang;
+        this.mota = mota;
+        this.loaisp_id = loaisp_id;
     }
 
     public int getId() {

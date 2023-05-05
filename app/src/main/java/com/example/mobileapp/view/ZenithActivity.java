@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -27,6 +28,7 @@ import com.example.mobileapp.model.Account;
 import com.example.mobileapp.model.Cart;
 import com.example.mobileapp.utils.Utils;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.gson.Gson;
@@ -48,6 +50,8 @@ public class ZenithActivity extends AppCompatActivity implements NavigationView.
     TextView tv_num_cart, tvUsername;
     LinearLayout lnCart;
     LinearLayout layoutLogout;
+    ImageView imgLogo;
+    FloatingActionButton floatingActionButton;
 
 
     @Override
@@ -74,7 +78,12 @@ public class ZenithActivity extends AppCompatActivity implements NavigationView.
     }
 
     private void initGUI() {
-
+        imgLogo = findViewById(R.id.img_logo);
+        imgLogo.setOnClickListener(view->
+                startActivity(new Intent(this,ZenithActivity.class)));
+        floatingActionButton = findViewById(R.id.button_bottomCart);
+        floatingActionButton.setOnClickListener(view->
+                startActivity(new Intent(this,CartActivity.class)));
         mNavigationView = findViewById(R.id.nav_header);
         mDrawerLayout = findViewById(R.id.header_draw);
         mToolbar = findViewById(R.id.header_toolbar);
@@ -91,33 +100,21 @@ public class ZenithActivity extends AppCompatActivity implements NavigationView.
         layoutLogout = findViewById(R.id.layout_logout);
 
         SharedPreferences prefts = getSharedPreferences(Utils.login_success, MODE_PRIVATE);
-        String object = prefts.getString("object", "");
+        String object = prefts.getString("object", null);
         Gson gson = new Gson();
         if (object != null) {
-            Account account = gson.fromJson(object, Account.class);
-            tvUsername.setText(account.getName());
-            // Đọc chuỗi JSON từ SharedPreferences
-            SharedPreferences list = getSharedPreferences(account.getName(), MODE_PRIVATE);
-            String json = list.getString(account.getName(), null);
-            // Chuyển đổi chuỗi JSON thành ArrayList bằng Gson
-            Type type = new TypeToken<List<Cart>>() {
-            }.getType();
-            if (Utils.listCart.isEmpty() && json != null) {
-                Utils.listCart = gson.fromJson(json, type);
-                tv_num_cart.setText(String.valueOf(Utils.listCart.size()));
-            }
-            Toast.makeText(this, account.getId()+"", Toast.LENGTH_SHORT).show();
-        }else{
-            // Đọc chuỗi JSON từ SharedPreferences
-            SharedPreferences list = getSharedPreferences("saveCart", MODE_PRIVATE);
-            String json = list.getString("no_log", null);
-            // Chuyển đổi chuỗi JSON thành ArrayList bằng Gson
-            Type type = new TypeToken<List<Cart>>() {
-            }.getType();
-            if (Utils.listCart.isEmpty() && json != null) {
-                Utils.listCart = gson.fromJson(json, type);
-                tv_num_cart.setText(String.valueOf(Utils.listCart.size()));
-            }
+                 Account account = gson.fromJson(object, Account.class);
+                tvUsername.setText(account.getName());
+                // Đọc chuỗi JSON từ SharedPreferences
+                SharedPreferences list = getSharedPreferences(account.getName(), MODE_PRIVATE);
+                String json = list.getString(account.getName(), null);
+                // Chuyển đổi chuỗi JSON thành ArrayList bằng Gson
+                Type type = new TypeToken<List<Cart>>() {
+                }.getType();
+                if (Utils.listCart.isEmpty() && json != null) {
+                    Utils.listCart = gson.fromJson(json, type);
+                    tv_num_cart.setText(String.valueOf(Utils.listCart.size()));
+                }
         }
         layoutLogout.setOnClickListener(new View.OnClickListener() {
             @Override

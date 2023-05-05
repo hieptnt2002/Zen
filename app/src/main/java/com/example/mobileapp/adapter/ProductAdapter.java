@@ -4,6 +4,7 @@ import static android.content.Context.MODE_PRIVATE;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.text.SpannableString;
 import android.text.Spanned;
@@ -20,11 +21,13 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.mobileapp.constance.OnItemClickListener;
 import com.example.mobileapp.model.Account;
 import com.example.mobileapp.model.Cart;
 import com.example.mobileapp.model.Product;
 import com.example.mobileapp.R;
 import com.example.mobileapp.utils.Utils;
+import com.example.mobileapp.view.ProductDetails;
 import com.google.gson.Gson;
 
 import java.text.NumberFormat;
@@ -36,6 +39,12 @@ import java.util.Locale;
 public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHolder> {
     ArrayList<Product> listProduct;
     Context context;
+    private OnItemClickListener mListener;
+
+    public void setOnItemClickListener(OnItemClickListener mListener) {
+        this.mListener = mListener;
+    }
+
     public OnClickAddCartListener iClickAddCartListener;
 
     public void filterNameProduct(String name) {
@@ -110,7 +119,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
         Glide.with(context).load(product.getAnh()).into(holder.img);
         Glide.with(context).load("https://static.vecteezy.com/system/resources/thumbnails/014/568/310/small/sale-label-promotion-red-tag-banner-label-templates-for-special-offers-free-png.png").into(holder.imgSale);
         int sale = (int) calculateRating(product);
-        holder.txtSale.setText("-"+ sale + "%");
+        holder.txtSale.setText("-" + sale + "%");
 
         Locale locale = new Locale("vi", "VN"); // Thiết lập địa phương Việt Nam
         NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(locale);
@@ -124,42 +133,48 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
         holder.btn_add_Cart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                if (Utils.listCart.size() > 0) {
-                    boolean flag = false;
-                    int quantity = 1;
-                    for (int i = 0; i < Utils.listCart.size(); i++) {
-                        if (Utils.listCart.get(i).getName().equals(product.getTen_sp())) {
-                            Utils.listCart.get(i).setQuantity(quantity + Utils.listCart.get(i).getQuantity());
-                            int price = product.getGia_sp() * Utils.listCart.get(i).getQuantity();
-                            Utils.listCart.get(i).setSaleprice(price);
-                            flag = true;
-                            Utils.saveCart(context);
-                        }
-                    }
-                    if (flag == false) {
-                        SharedPreferences preferences = context.getSharedPreferences(Utils.login_success,MODE_PRIVATE);
-                        String json = preferences.getString("object","");
-                        Gson gson = new Gson();
-                        if(json != null){
-                            Account account = gson.fromJson(json,Account.class);
-                            Utils.listCart.add(new Cart(product.getAnh(),product.getTen_sp(),product.getGia_sp(),product.getGia_km(),1,account.getId()));
-                            Utils.saveCart(context);
-                        }
-                    }
-                } else {
-                    SharedPreferences preferences = context.getSharedPreferences(Utils.login_success,MODE_PRIVATE);
-                    String json = preferences.getString("object","");
+                SharedPreferences preferences = context.getSharedPreferences(Utils.login_success, MODE_PRIVATE);
+                String json = preferences.getString("object", null);
+                if (json != null) {
                     Gson gson = new Gson();
-                    if(json != null){
-                        Account account = gson.fromJson(json,Account.class);
-                        Utils.listCart.add(new Cart(product.getAnh(),product.getTen_sp(),product.getGia_sp(),product.getGia_km(),1,account.getId()));
+                    Account account = gson.fromJson(json, Account.class);
+                    if (Utils.listCart.size() > 0) {
+                        boolean flag = false;
+                        int quantity = 1;
+                        for (int i = 0; i < Utils.listCart.size(); i++) {
+                            if (Utils.listCart.get(i).getName().equals(product.getTen_sp())) {
+                                Utils.listCart.get(i).setQuantity(quantity + Utils.listCart.get(i).getQuantity());
+                                flag = true;
+                                Utils.saveCart(context);
+                            }
+                        }
+                        if (flag == false) {
+                            Utils.listCart.add(new Cart(product.getAnh(), product.getTen_sp(), product.getGia_sp(), product.getGia_km(), 1, account.getId()));
+                            Utils.saveCart(context);
+                        }
+                    } else {
+                        Utils.listCart.add(new Cart(product.getAnh(), product.getTen_sp(), product.getGia_sp(), product.getGia_km(), 1, account.getId()));
                         Utils.saveCart(context);
                     }
-                }
-
-                Toast.makeText(context, Utils.listCart.size() + "", Toast.LENGTH_SHORT).show();
+                } else
+                    Toast.makeText(context, "Bạn cần đăng nhập để mua hàng", Toast.LENGTH_SHORT).show();
                 iClickAddCartListener.onClickAddToCart();
+            }
+        });
+        holder.txtName.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context, ProductDetails.class);
+                intent.putExtra("product", product);
+                context.startActivity(intent);
+            }
+        });
+        holder.img.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context, ProductDetails.class);
+                intent.putExtra("product", product);
+                context.startActivity(intent);
             }
         });
 
