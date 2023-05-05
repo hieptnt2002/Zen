@@ -5,8 +5,8 @@ import com.example.mobileapp.model.Cart;
 import java.util.List;
 
 public class Constants {
-    public static final String API_URL_LAPTOP = "http://hiepvakhanh21-001-site1.htempurl.com/list_laptop.php";
-    public static final String API_URL_SMARTPHONE = "http://hiepvakhanh21-001-site1.htempurl.com/list_smartphone.php";
+    public static final String API_URL_LAPTOP = "http://hiepvakhanh21-001-site1.htempurl.com/data_laptop.php";
+    public static final String API_URL_SMARTPHONE = "http://hiepvakhanh21-001-site1.htempurl.com/data_smartphone.php";
     public static final String API_URL_TH_LAPTOP = "http://hiepvakhanh21-001-site1.htempurl.com/thuonghieu_laptop.php";
     public static final String API_URL_TH_SMARTPHONE = "http://hiepvakhanh21-001-site1.htempurl.com/thuonghieu_dienthoai.php";
     public static final String API_URL_BANNER = "http://hiepvakhanh21-001-site1.htempurl.com/slider__home.php";
@@ -15,5 +15,7 @@ public class Constants {
     public static final String API_URL_CATEGORY = "http://hiepvakhanh21-001-site1.htempurl.com/show_danhmucc.php";
     public static final String API_URL_CREATE_ACCOUNT = "http://hiepvakhanh21-001-site1.htempurl.com/sign__up.php";
     public static final String API_URL_LIST_ACCOUNT = "http://hiepvakhanh21-001-site1.htempurl.com/list_account.php";
+    public static final String API_URL_SMARTPHONE_DETAILS = "http://hiepvakhanh21-001-site1.htempurl.com/smartphone__detaill.php";
+    public static final String API_URL_FIND_RESULT = "http://hiepvakhanh21-001-site1.htempurl.com/find_result.php";
 
 }

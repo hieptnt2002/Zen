@@ -6,10 +6,18 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.ColorMatrix;
+import android.graphics.ColorMatrixColorFilter;
+import android.graphics.Paint;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.mobileapp.R;
 import com.example.mobileapp.adapter.CartAdapter;
@@ -31,6 +39,7 @@ public class CartActivity extends AppCompatActivity {
     BottomSheetFragment bottomSheetFragment;
 
 
+
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,7 +49,7 @@ public class CartActivity extends AppCompatActivity {
         tvOut.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(getApplicationContext(), ZenithActivity.class));
+                onBackPressed();
             }
         });
         rvCart.setHasFixedSize(true);
@@ -73,7 +82,7 @@ public class CartActivity extends AppCompatActivity {
             }
         });
         clickToOrder();
-        if(Utils.listCart != null) Utils.saveCart(this);
+            Utils.saveCart(this);
     }
 
     private void initGUI() {
@@ -87,13 +96,17 @@ public class CartActivity extends AppCompatActivity {
         layoutPay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Order order = new Order(Utils.listCart, Utils.total_pay);
-                bottomSheetFragment = BottomSheetFragment.newInstance(order);
-                bottomSheetFragment.show(getSupportFragmentManager(), bottomSheetFragment.getTag());
-                bottomSheetFragment.setCancelable(false);
+                if(Utils.listCart != null && !Utils.listCart.isEmpty()){
+                    Order order = new Order(Utils.listCart, Utils.total_pay);
+                    bottomSheetFragment = BottomSheetFragment.newInstance(order);
+                    bottomSheetFragment.show(getSupportFragmentManager(), bottomSheetFragment.getTag());
+                    bottomSheetFragment.setCancelable(false);
+                }else Toast.makeText(CartActivity.this, "Giỏ hàng đang trống !!!", Toast.LENGTH_SHORT).show();
+
 
             }
         });
+
     }
 
 }

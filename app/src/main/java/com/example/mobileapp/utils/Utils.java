@@ -4,6 +4,7 @@ import static android.content.Context.MODE_PRIVATE;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.widget.Toast;
 
 import com.example.mobileapp.model.Account;
 import com.example.mobileapp.model.Cart;
@@ -40,17 +41,14 @@ public class Utils {
         String json = preferences.getString("object","");
         Gson gson = new Gson();
 
-        if(json != null ){
-            Account account = gson.fromJson(json,Account.class);
-            String list = gson.toJson(Utils.listCart);
-            SharedPreferences.Editor editor = context.getSharedPreferences(account.getName(),MODE_PRIVATE).edit();
-            editor.putString(account.getName(),list);
-            editor.apply();
-        }else {
-            String list = gson.toJson(Utils.listCart);
-            SharedPreferences.Editor editor = context.getSharedPreferences("saveCart",MODE_PRIVATE).edit();
-            editor.putString("no_log",list);
-            editor.apply();
+        if(json != null ) {
+            Account account = gson.fromJson(json, Account.class);
+          if(account != null){
+              String list = gson.toJson(Utils.listCart);
+              SharedPreferences.Editor editor = context.getSharedPreferences(account.getName(), MODE_PRIVATE).edit();
+              editor.putString(account.getName(), list);
+              editor.apply();
+          }
         }
 
     }

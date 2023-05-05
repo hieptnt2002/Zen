@@ -4,10 +4,12 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.LinearLayout;
@@ -19,6 +21,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
@@ -56,7 +59,6 @@ public class SmartphoneFragment extends Fragment {
     BannerChildAdapter bannerAdapter;
     View view;
     LinearLayout llHighFilter, llLowFilter, llPercentFilter;
-    List<String> suggestSearchList = new ArrayList<>();
     ProgressBar progressBar;
 
     @Nullable
@@ -85,6 +87,7 @@ public class SmartphoneFragment extends Fragment {
 
     }
     void search(){
+        ArrayAdapter suggestAdapter = new ArrayAdapter(getContext(), android.R.layout.simple_list_item_1,Utils.suggestSearchList);
         inputSearch.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -94,6 +97,7 @@ public class SmartphoneFragment extends Fragment {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 inputLayout.setHintEnabled(false);
+                inputSearch.setAdapter(suggestAdapter);
             }
 
             @Override
@@ -101,6 +105,28 @@ public class SmartphoneFragment extends Fragment {
                 smartAdapter.filterNameProduct(inputSearch.getText().toString());
             }
         });
+        inputSearch.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if(actionId == EditorInfo.IME_ACTION_SEARCH || actionId == EditorInfo.IME_ACTION_DONE
+                        || event.getAction() == KeyEvent.ACTION_DOWN || event.getAction() == KeyEvent.KEYCODE_ENTER){
+
+                    Bundle bundle = new Bundle();
+                    bundle.putString("name", String.valueOf(inputSearch.getText()));
+                    SearchFragment searchFragment = new SearchFragment();
+                    searchFragment.setArguments(bundle);
+                    replaceFragment(searchFragment);
+
+                    return true;
+                }
+                return false;
+            }
+        });
+    }
+    public void replaceFragment(Fragment fragment) {
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        transaction.replace(R.id.content_frame, fragment);
+        transaction.commit();
     }
 
     public void eventFilter() {
@@ -207,11 +233,9 @@ public class SmartphoneFragment extends Fragment {
                     JSONArray jsonArray = new JSONArray(response);
                     for (int i = 0; i < jsonArray.length(); i++) {
                         JSONObject arr = jsonArray.getJSONObject(i);
-                        mList.add(new Product(arr.getInt("id"), arr.getString("anh"), arr.getString("ten_sp"), arr.getInt("gia_sp"), arr.getInt("gia_km"), arr.getString("quatang")));
-                        suggestSearchList.add(arr.getString("ten_sp"));
+                        mList.add(new Product(arr.getInt("id"), arr.getString("anh"), arr.getString("ten_sp"), arr.getInt("gia_sp"), arr.getInt("gia_km"), arr.getString("quatang"),arr.getString("mota"),arr.getInt("loaisp_id")));
+
                     }
-                    ArrayAdapter suggestAdapter = new ArrayAdapter(getContext(), android.R.layout.simple_list_item_1,suggestSearchList);
-                    inputSearch.setAdapter(suggestAdapter);
                     smartAdapter = new ProductAdapter(mList, getContext());
                     rvSmartphone.setAdapter(smartAdapter);
                     smartAdapter.setOnClickAddToCart(new ProductAdapter.OnClickAddCartListener() {

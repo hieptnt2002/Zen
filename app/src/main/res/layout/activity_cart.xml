@@ -50,7 +50,7 @@
             android:layout_height="55dp"
             android:background="@drawable/border_row_product"
             android:padding="5dp"
-
+            android:id="@+id/logoInCart"
             android:scaleType="fitXY"
             android:src="@drawable/logo_trangcon"
             app:layout_constraintBottom_toBottomOf="parent"

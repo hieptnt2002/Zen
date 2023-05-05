@@ -1,7 +1,10 @@
 package com.example.mobileapp.fragment;
 
+import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +14,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -19,7 +23,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.mobileapp.R;
 import com.example.mobileapp.adapter.OrderAdapter;
+import com.example.mobileapp.model.Cart;
 import com.example.mobileapp.model.Order;
+import com.example.mobileapp.utils.Utils;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
@@ -40,7 +46,7 @@ public class BottomSheetFragment extends BottomSheetDialogFragment {
     private Order mOrder;
     Locale locale = new Locale("vi", "VN"); // Thiết lập địa phương Việt Nam
     NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(locale);
-    LinearLayout layoutCancel;
+    LinearLayout layoutCancel, layoutOrder;
 
     public static BottomSheetFragment newInstance(Order order) {
         BottomSheetFragment bottomSheetFragment = new BottomSheetFragment();
@@ -66,8 +72,8 @@ public class BottomSheetFragment extends BottomSheetDialogFragment {
         View view = LayoutInflater.from(getContext()).inflate(R.layout.bottom_sheet_order, null);
         mBottomSheetDialog.setContentView(view);
         initGUI(view);
-        clickOut();
         setDataOrder();
+        event();
         BottomSheetBehavior behavior = BottomSheetBehavior.from((View) view.getParent());
         behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
         return mBottomSheetDialog;
@@ -83,11 +89,12 @@ public class BottomSheetFragment extends BottomSheetDialogFragment {
         tvTotalPay2 = view.findViewById(R.id.textView_total_pay2);
         spnMethodPay = view.findViewById(R.id.spinner_pay);
         layoutCancel = view.findViewById(R.id.btn_cancel);
+        layoutOrder = view.findViewById(R.id.btn_add_order);
     }
 
     private void setDataOrder() {
         rvOrder.setHasFixedSize(true);
-        rvOrder.setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.VERTICAL,false));
+        rvOrder.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
         if (mOrder == null) {
             return;
         }
@@ -100,7 +107,7 @@ public class BottomSheetFragment extends BottomSheetDialogFragment {
         list.add("Thanh toán khi nhận hàng");
         list.add("Chuyển khoản ngân hàng");
         list.add("Thanh toán qua ZaloPay");
-        ArrayAdapter adapter = new ArrayAdapter(getContext(), android.R.layout.simple_list_item_1,list);
+        ArrayAdapter adapter = new ArrayAdapter(getContext(), android.R.layout.simple_list_item_1, list);
         spnMethodPay.setAdapter(adapter);
 
         int height_item = getResources().getDimensionPixelSize(R.dimen.item_height_cart);
@@ -110,13 +117,74 @@ public class BottomSheetFragment extends BottomSheetDialogFragment {
         params.height = total_height;
         rvOrder.setLayoutParams(params);
 
+
     }
-    void clickOut(){
+
+    void event() {
         layoutCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mBottomSheetDialog.dismiss();
             }
         });
+        List<Cart> mCart = mOrder.getmList();
+        String name = "";
+        String quantity = "";
+        String name_quantity = "";
+        for (int i = 0; i < mCart.size(); i++) {
+            name += mCart.get(i).getName() + "\n";
+            quantity += mCart.get(i).getQuantity() + "\n";
+            name_quantity += mCart.get(i).getName() + " x " + mCart.get(i).getQuantity() + "\n";
+        }
+        String finalName_quantity = name_quantity;
+        if (mCart != null && !mCart.isEmpty()) {
+            layoutOrder.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (edtName.getText().toString().isEmpty() ||
+                            edtSDT.getText().toString().isEmpty() ||
+                            edtAddress.getText().toString().isEmpty() ||
+                            edtSDT.getText().toString().length() < 10) {
+                        Toast.makeText(getContext(), "Nhập đầy đủ thông tin đặt hàng!", Toast.LENGTH_SHORT).show();
+                    } else {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                        builder.setTitle("Đặt hàng thành công");
+                        builder.setIcon(R.drawable.bill);
+
+                        builder.setMessage("Gồm có các sản phẩm: \n" + finalName_quantity +
+                                "\nTên người nhận: " + edtName.getText().toString() +
+                                "\n Số điện thoại: " + edtSDT.getText().toString() +
+                                "\n Địa chỉ người nhận: " + edtAddress.getText().toString() +
+                                "\n Hình thức thanh toán: " + spnMethodPay.getSelectedItem().toString() +
+                                "\nTổng thanh toán của bạn là: " + tvTotalPay.getText());
+                        builder.setPositiveButton("Đóng", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                                mBottomSheetDialog.dismiss();
+                                Utils.listCart.clear();
+                                getActivity().recreate();
+                            }
+                        });
+                        builder.setCancelable(false);
+                        AlertDialog alertDialog = builder.create();
+                        alertDialog.show();
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (alertDialog.isShowing()) {
+                                    alertDialog.dismiss();
+                                    mBottomSheetDialog.dismiss();
+                                    Utils.listCart.clear();
+                                    getActivity().recreate();
+                                }
+
+                            }
+                        }, 10000);
+                    }
+
+                }
+            });
+        }
     }
 }

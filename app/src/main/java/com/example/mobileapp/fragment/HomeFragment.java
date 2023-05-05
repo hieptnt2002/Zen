@@ -4,10 +4,12 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.ProgressBar;
@@ -60,26 +62,18 @@ public class HomeFragment extends Fragment {
     View view;
     ViewPager viewPager;
     CircleIndicator circleIndicator;
-
-    List<Banner> bannerList;
-    Timer timer;
-    TextView txtCart;
-    ArrayList<Category> cateList;
-    CategoryAdapter cateAdapter;
     ProductAdapter smartAdapter, laptopAdapter;
     BannerAdapter bannerAdapter;
     CategoryAdapter categoryAdapter;
-    LinearLayoutManager layoutProduct, layoutLaptop;
     ProgressBar loading_cate;
     AutoCompleteTextView inputSearch;
     TextInputLayout textInputLayout;
     TextView tvLaptop;
     RecyclerView rvSmart, rvCate, rvLaptop, rvFilter_Smartphone, rvFilter_Laptop;
-    public int clickPosition;
     NavigationView mNavigationView;
     BottomNavigationView bottomNavigationView;
 
-    List<String> suggestList = new ArrayList<>();
+
     ZenithActivity zenithActivity;
     ArrayAdapter suggestAdapter;
 
@@ -110,7 +104,6 @@ public class HomeFragment extends Fragment {
         viewPager = view.findViewById(R.id.viewPager_home);
         circleIndicator = view.findViewById(R.id.circleIndicator_home);
         rvSmart = view.findViewById(R.id.recyclerView_productHome);
-
         loading_cate = view.findViewById(R.id.load_categoryHome);
         inputSearch = view.findViewById(R.id.autoCompleteText_search);
         textInputLayout = view.findViewById(R.id.textInputLayout);
@@ -132,11 +125,29 @@ public class HomeFragment extends Fragment {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 textInputLayout.setHintEnabled(false);
                 inputSearch.setAdapter(suggestAdapter);
+
             }
 
             @Override
             public void afterTextChanged(Editable s) {
 
+            }
+        });
+        inputSearch.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if(actionId == EditorInfo.IME_ACTION_SEARCH || actionId == EditorInfo.IME_ACTION_DONE
+                        || event.getAction() == KeyEvent.ACTION_DOWN || event.getAction() == KeyEvent.KEYCODE_ENTER){
+
+                    Bundle bundle = new Bundle();
+                    bundle.putString("name", String.valueOf(inputSearch.getText()));
+                    SearchFragment searchFragment = new SearchFragment();
+                    searchFragment.setArguments(bundle);
+                    replaceFragment(searchFragment);
+
+                    return true;
+                }
+                return false;
             }
         });
     }
@@ -322,8 +333,7 @@ public class HomeFragment extends Fragment {
                     JSONArray jsonArray = new JSONArray(response);
                     for (int i = 0; i < jsonArray.length(); i++) {
                         JSONObject arr = jsonArray.getJSONObject(i);
-                        mList.add(new Product(arr.getInt("id"), arr.getString("anh"), arr.getString("ten_sp"), arr.getInt("gia_sp"), arr.getInt("gia_km"), arr.getString("quatang")));
-                        suggestList.add(arr.getString("ten_sp"));
+                        mList.add(new Product(arr.getInt("id"), arr.getString("anh"), arr.getString("ten_sp"), arr.getInt("gia_sp"), arr.getInt("gia_km"), arr.getString("quatang"),arr.getString("mota"),arr.getInt("loaisp_id")));
                         Utils.suggestSearchList.add(arr.getString("ten_sp"));
 
                     }
@@ -340,8 +350,6 @@ public class HomeFragment extends Fragment {
                         }
                     });
                     autoSlideRv(rvSmart);
-//                    ArrayAdapter testAdapter = new ArrayAdapter(getContext(), android.R.layout.simple_list_item_1, suggestList);
-//                    autoCompleteText_search.setAdapter(testAdapter);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -365,7 +373,7 @@ public class HomeFragment extends Fragment {
                     JSONArray jsonArray = new JSONArray(response);
                     for (int i = 0; i < jsonArray.length(); i++) {
                         JSONObject arr = jsonArray.getJSONObject(i);
-                        laptopList.add(new Product(arr.getInt("id"), arr.getString("anh"), arr.getString("ten_sp"), arr.getInt("gia_sp"), arr.getInt("gia_km"), arr.getString("quatang")));
+                        laptopList.add(new Product(arr.getInt("id"), arr.getString("anh"), arr.getString("ten_sp"), arr.getInt("gia_sp"), arr.getInt("gia_km"), arr.getString("quatang"),arr.getString("mota"),arr.getInt("loaisp_id")));
                         Utils.suggestSearchList.add(arr.getString("ten_sp"));
                     }
 
