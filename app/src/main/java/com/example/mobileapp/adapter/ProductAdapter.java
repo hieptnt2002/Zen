@@ -39,13 +39,16 @@ import java.util.Locale;
 public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHolder> {
     ArrayList<Product> listProduct;
     Context context;
-    private OnItemClickListener mListener;
-
-    public void setOnItemClickListener(OnItemClickListener mListener) {
-        this.mListener = mListener;
-    }
 
     public OnClickAddCartListener iClickAddCartListener;
+    public interface OnClickAddCartListener {
+        void onClickAddToCart();
+    }
+
+    public void setOnClickAddToCart(OnClickAddCartListener mListener) {
+        iClickAddCartListener = mListener;
+    }
+
 
     public void filterNameProduct(String name) {
         name = name.toLowerCase();
@@ -89,13 +92,6 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
         return ((gia_sp - gia_km) / gia_sp) * 100;
     }
 
-    public interface OnClickAddCartListener {
-        void onClickAddToCart();
-    }
-
-    public void setOnClickAddToCart(OnClickAddCartListener mListener) {
-        iClickAddCartListener = mListener;
-    }
 
     public ProductAdapter(ArrayList<Product> listProduct, Context context) {
         this.listProduct = listProduct;

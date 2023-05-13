@@ -21,8 +21,15 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.example.mobileapp.R;
 import com.example.mobileapp.adapter.OrderAdapter;
+import com.example.mobileapp.constants.Constants;
 import com.example.mobileapp.model.Cart;
 import com.example.mobileapp.model.Order;
 import com.example.mobileapp.utils.Utils;
@@ -32,8 +39,10 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 public class BottomSheetFragment extends BottomSheetDialogFragment {
     private static final String KEY_ORDER_OBJECT = "object";
@@ -128,12 +137,8 @@ public class BottomSheetFragment extends BottomSheetDialogFragment {
             }
         });
         List<Cart> mCart = mOrder.getmList();
-        String name = "";
-        String quantity = "";
         String name_quantity = "";
         for (int i = 0; i < mCart.size(); i++) {
-            name += mCart.get(i).getName() + "\n";
-            quantity += mCart.get(i).getQuantity() + "\n";
             name_quantity += mCart.get(i).getName() + " x " + mCart.get(i).getQuantity() + "\n";
         }
         String finalName_quantity = name_quantity;
@@ -147,6 +152,11 @@ public class BottomSheetFragment extends BottomSheetDialogFragment {
                             edtSDT.getText().toString().length() < 10) {
                         Toast.makeText(getContext(), "Nhập đầy đủ thông tin đặt hàng!", Toast.LENGTH_SHORT).show();
                     } else {
+                        //up len api
+                        for (int i = 0; i < mCart.size(); i++) {
+                            upApiOrder(mCart, i);
+                        }
+                        //hien thi bill
                         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
                         builder.setTitle("Đặt hàng thành công");
                         builder.setIcon(R.drawable.bill);
@@ -181,10 +191,39 @@ public class BottomSheetFragment extends BottomSheetDialogFragment {
 
                             }
                         }, 10000);
+                        Utils.saveCart(getContext());
                     }
 
                 }
             });
         }
+    }
+
+    private void upApiOrder(List<Cart> mCart, int i) {
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, Constants.API_URL_INSERT_ORDER, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+            }
+        }) {
+            @Nullable
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params = new HashMap<>();
+                params.put("img", mCart.get(i).getImg());
+                params.put("name", mCart.get(i).getName());
+                params.put("price", mCart.get(i).getPrice() * mCart.get(i).getQuantity() + "");
+                params.put("quantity", mCart.get(i).getQuantity() + "");
+                params.put("trangthai", "Chưa thanh toán");
+                params.put("account_id", mCart.get(i).getAccount_id() + "");
+                return params;
+            }
+        };
+        Volley.newRequestQueue(getContext()).add(stringRequest);
     }
 }

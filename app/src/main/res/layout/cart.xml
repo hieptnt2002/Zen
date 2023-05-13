@@ -5,16 +5,18 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/border_row_product"
+    android:layout_marginBottom="5dp"
     android:padding="20dp">
 
     <ImageView
+
         android:id="@+id/imgCart.row"
         android:layout_width="110dp"
         android:layout_height="140dp"
         app:layout_constraintStart_toStartOf="parent"
         android:scaleType="centerInside"
         app:layout_constraintTop_toTopOf="parent"
-        android:padding="0dp"
+        android:padding="5dp"
         android:background="@drawable/border_row_product"
         app:srcCompat="@drawable/video_call" />
 
