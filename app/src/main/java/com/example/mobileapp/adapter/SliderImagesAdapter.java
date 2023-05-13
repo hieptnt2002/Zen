@@ -1,10 +1,5 @@
 package com.example.mobileapp.adapter;
 
-import android.annotation.SuppressLint;
-import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,10 +14,10 @@ import com.example.mobileapp.R;
 
 import java.util.List;
 
-public class BannerProductDetailsAdapter extends PagerAdapter {
+public class SliderImagesAdapter extends PagerAdapter {
     List<Banner> imgBannerList;
 
-    public BannerProductDetailsAdapter(List<Banner> imgBannerList) {
+    public SliderImagesAdapter(List<Banner> imgBannerList) {
         this.imgBannerList = imgBannerList;
     }
 

@@ -1,17 +1,10 @@
 package com.example.mobileapp.fragment;
 
 import android.os.Bundle;
-import android.os.Handler;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,7 +14,6 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.viewpager.widget.ViewPager;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -30,15 +22,11 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.mobileapp.R;
-import com.example.mobileapp.adapter.BannerChildAdapter;
-import com.example.mobileapp.adapter.BannerProductDetailsAdapter;
 import com.example.mobileapp.adapter.ProductAdapter;
 import com.example.mobileapp.constants.Constants;
-import com.example.mobileapp.model.Banner;
 import com.example.mobileapp.model.Product;
 import com.example.mobileapp.utils.Utils;
 import com.example.mobileapp.view.ZenithActivity;
-import com.google.android.material.textfield.TextInputLayout;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -46,10 +34,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-
-import me.relex.circleindicator.CircleIndicator;
 
 public class SearchFragment extends Fragment {
     View view;

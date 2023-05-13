@@ -15,7 +15,6 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
-import androidx.viewpager2.widget.ViewPager2;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -24,8 +23,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.mobileapp.R;
-import com.example.mobileapp.adapter.BannerAdapter;
-import com.example.mobileapp.adapter.BannerProductDetailsAdapter;
+import com.example.mobileapp.adapter.SliderImagesAdapter;
 import com.example.mobileapp.constants.Constants;
 import com.example.mobileapp.model.Account;
 import com.example.mobileapp.model.Banner;
@@ -52,7 +50,7 @@ public class ProductDetails extends AppCompatActivity {
     ViewPager viewPager;
     CircleIndicator circleIndicator;
     TextView tvName, tvSalePrice, tvCost, tvColor, tvVoucher, tvInfoProduct, tvAddToCart, tvBuyNow, tvNumberCart;
-    BannerProductDetailsAdapter bannerAdapter;
+    SliderImagesAdapter bannerAdapter;
     ArrayList<Banner> bannerList = new ArrayList<>();
 
     @Override
@@ -122,10 +120,10 @@ public class ProductDetails extends AppCompatActivity {
 
                     for (int i = 0; i < jsonArray.length(); i++) {
                         JSONObject arr = jsonArray.getJSONObject(i);
-                        bannerList.add(new Banner(arr.getInt("id"), arr.getString("anh")));
+                        bannerList.add(new Banner(arr.getInt("id"), arr.getString("img")));
 
                     }
-                    bannerAdapter = new BannerProductDetailsAdapter(bannerList);
+                    bannerAdapter = new SliderImagesAdapter(bannerList);
                     viewPager.setAdapter(bannerAdapter);
                     circleIndicator.setViewPager(viewPager);
                     bannerAdapter.registerDataSetObserver(circleIndicator.getDataSetObserver());
