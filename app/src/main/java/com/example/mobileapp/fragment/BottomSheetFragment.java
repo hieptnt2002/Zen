@@ -38,6 +38,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
 import java.text.NumberFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -56,6 +57,7 @@ public class BottomSheetFragment extends BottomSheetDialogFragment {
     Locale locale = new Locale("vi", "VN"); // Thiết lập địa phương Việt Nam
     NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(locale);
     LinearLayout layoutCancel, layoutOrder;
+    String receiver, address, phone;
 
     public static BottomSheetFragment newInstance(Order order) {
         BottomSheetFragment bottomSheetFragment = new BottomSheetFragment();
@@ -146,10 +148,13 @@ public class BottomSheetFragment extends BottomSheetDialogFragment {
             layoutOrder.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (edtName.getText().toString().isEmpty() ||
-                            edtSDT.getText().toString().isEmpty() ||
-                            edtAddress.getText().toString().isEmpty() ||
-                            edtSDT.getText().toString().length() < 10) {
+                    receiver = edtName.getText().toString();
+                    address = edtAddress.getText().toString();
+                    phone = edtSDT.getText().toString();
+                    if (receiver.isEmpty() ||
+                            phone.isEmpty() ||
+                            address.isEmpty() ||
+                            phone.length() < 10) {
                         Toast.makeText(getContext(), "Nhập đầy đủ thông tin đặt hàng!", Toast.LENGTH_SHORT).show();
                     } else {
                         //up len api
@@ -200,7 +205,7 @@ public class BottomSheetFragment extends BottomSheetDialogFragment {
     }
 
     private void upApiOrder(List<Cart> mCart, int i) {
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, Constants.API_URL_INSERT_ORDER, new Response.Listener<String>() {
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, Constants.API + "order.php", new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
 
@@ -214,6 +219,8 @@ public class BottomSheetFragment extends BottomSheetDialogFragment {
             @Nullable
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
+                LocalDate currentDate = LocalDate.now();
+                String formattedDate = currentDate.toString();
                 Map<String, String> params = new HashMap<>();
                 params.put("img", mCart.get(i).getImg());
                 params.put("name", mCart.get(i).getName());
@@ -221,6 +228,10 @@ public class BottomSheetFragment extends BottomSheetDialogFragment {
                 params.put("quantity", mCart.get(i).getQuantity() + "");
                 params.put("trangthai", "Chưa thanh toán");
                 params.put("account_id", mCart.get(i).getAccount_id() + "");
+                params.put("receiver", receiver);
+                params.put("address", address);
+                params.put("phone", phone);
+                params.put("date", formattedDate);
                 return params;
             }
         };

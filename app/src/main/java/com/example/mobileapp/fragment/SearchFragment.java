@@ -49,7 +49,7 @@ public class SearchFragment extends Fragment {
         view = inflater.inflate(R.layout.fragment_search, container, false);
         initGUI();
         Bundle bundle = this.getArguments();
-        ZenithActivity z= (ZenithActivity) getActivity();
+        ZenithActivity z = (ZenithActivity) getActivity();
         z.mCurrentFragment = 999;
         if (bundle != null) {
             String name = "%" + bundle.getString("name") + "%";
@@ -70,7 +70,7 @@ public class SearchFragment extends Fragment {
     }
 
     private void loadDataFind(String name) {
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, Constants.API_URL_FIND_RESULT, new Response.Listener<String>() {
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, Constants.API + "find_result.php", new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 ArrayList<Product> mList = new ArrayList<>();
@@ -93,19 +93,21 @@ public class SearchFragment extends Fragment {
                             }
                         }
                     });
-                    int itemHeight = getResources().getDimensionPixelSize(R.dimen.item_height_product); // chiều cao của một item
-                    int numItems = 0;
-                    if (findAdapter.getItemCount() % 2 == 0) {
-                        numItems = findAdapter.getItemCount() / 2; // số lượng item trong RecyclerView
-                    } else
-                        numItems = (findAdapter.getItemCount() + 1) / 2; // số lượng item trong RecyclerView
+                    if (findAdapter != null) {
+                        int itemHeight = getResources().getDimensionPixelSize(R.dimen.item_height_product); // chiều cao của một item
+                        int numItems = 0;
+                        if (findAdapter.getItemCount() % 2 == 0) {
+                            numItems = findAdapter.getItemCount() / 2; // số lượng item trong RecyclerView
+                        } else
+                            numItems = (findAdapter.getItemCount() + 1) / 2; // số lượng item trong RecyclerView
 
-                    int totalHeight = itemHeight * numItems; // tổng chiều cao của tất cả các item trong RecyclerView
-                    ViewGroup.LayoutParams params = rvSearchResults.getLayoutParams();
-                    params.height = totalHeight;
-                    rvSearchResults.setLayoutParams(params);
+                        int totalHeight = itemHeight * numItems; // tổng chiều cao của tất cả các item trong RecyclerView
+                        ViewGroup.LayoutParams params = rvSearchResults.getLayoutParams();
+                        params.height = totalHeight;
+                        rvSearchResults.setLayoutParams(params);
+                    }
                     //số sản phẩm tìm được
-                    if(mList != null) tvSearchResults.setText(mList.size()+" sản phẩm");
+                    if (mList != null) tvSearchResults.setText(mList.size() + " sản phẩm");
 
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -132,7 +134,7 @@ public class SearchFragment extends Fragment {
         llHighFilter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                findAdapter.filterPriceProductHigh();
+                if (findAdapter != null) findAdapter.filterPriceProductHigh();
                 llHighFilter.setBackgroundDrawable(ContextCompat.getDrawable(getContext(), R.drawable.background_filter_click));
                 llLowFilter.setBackgroundDrawable(ContextCompat.getDrawable(getContext(), R.drawable.border_filter));
                 llPercentFilter.setBackgroundDrawable(ContextCompat.getDrawable(getContext(), R.drawable.border_filter));
@@ -141,7 +143,7 @@ public class SearchFragment extends Fragment {
         llLowFilter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                findAdapter.filterPriceProductLow();
+                if (findAdapter != null) findAdapter.filterPriceProductLow();
                 llHighFilter.setBackgroundDrawable(ContextCompat.getDrawable(getContext(), R.drawable.border_filter));
                 llLowFilter.setBackgroundDrawable(ContextCompat.getDrawable(getContext(), R.drawable.background_filter_click));
                 llPercentFilter.setBackgroundDrawable(ContextCompat.getDrawable(getContext(), R.drawable.border_filter));
@@ -151,7 +153,7 @@ public class SearchFragment extends Fragment {
         llPercentFilter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                findAdapter.filterPriceProductPercent();
+                if (findAdapter != null) findAdapter.filterPriceProductPercent();
                 llHighFilter.setBackgroundDrawable(ContextCompat.getDrawable(getContext(), R.drawable.border_filter));
                 llLowFilter.setBackgroundDrawable(ContextCompat.getDrawable(getContext(), R.drawable.border_filter));
                 llPercentFilter.setBackgroundDrawable(ContextCompat.getDrawable(getContext(), R.drawable.background_filter_click));

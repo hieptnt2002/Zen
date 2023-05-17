@@ -1,7 +1,6 @@
 package com.example.mobileapp.fragment;
 
 
-
 import android.app.Dialog;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -42,14 +41,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class  HistoryOrderBottomSheetFragment extends BottomSheetDialogFragment {
+public class HistoryOrderBottomSheetFragment extends BottomSheetDialogFragment {
     TextView tvIsOrder;
     RecyclerView recyclerView;
     BottomSheetDialog mBottomSheetDialog;
 
 
-    public static  HistoryOrderBottomSheetFragment newInstance() {
-        HistoryOrderBottomSheetFragment bottomSheetFragment = new  HistoryOrderBottomSheetFragment();
+    public static HistoryOrderBottomSheetFragment newInstance() {
+        HistoryOrderBottomSheetFragment bottomSheetFragment = new HistoryOrderBottomSheetFragment();
         return bottomSheetFragment;
     }
 
@@ -68,12 +67,12 @@ public class  HistoryOrderBottomSheetFragment extends BottomSheetDialogFragment 
         tvIsOrder = view.findViewById(R.id.textView_isOrder);
 
         recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext(),LinearLayoutManager.VERTICAL,false));
+        recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext(), LinearLayoutManager.VERTICAL, false));
         SharedPreferences pref = getActivity().getSharedPreferences(Utils.login_success, Context.MODE_PRIVATE);
-        String object = pref.getString("object",null);
-        if(object != null || !object.isEmpty()){
+        String object = pref.getString("object", null);
+        if (object != null && !object.isEmpty()) {
             Gson gson = new Gson();
-            Account account = gson.fromJson(object,Account.class);
+            Account account = gson.fromJson(object, Account.class);
             loadData(account);
         }
 
@@ -82,8 +81,9 @@ public class  HistoryOrderBottomSheetFragment extends BottomSheetDialogFragment 
         behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
         return mBottomSheetDialog;
     }
+
     private void loadData(Account account) {
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, Constants.API_URL_SHOW_ORDER, new Response.Listener<String>() {
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, Constants.API + "show_order.php", new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 List<HistoryOrder> mList = new ArrayList<>();
@@ -91,13 +91,13 @@ public class  HistoryOrderBottomSheetFragment extends BottomSheetDialogFragment 
                     JSONArray jsonArray = new JSONArray(response);
                     for (int i = 0; i < jsonArray.length(); i++) {
                         JSONObject arr = jsonArray.getJSONObject(i);
-                        mList.add(new HistoryOrder(arr.getInt("id"), arr.getString("img"),arr.getString("name"),arr.getInt("price"),arr.getInt("quantity")));
+                        mList.add(new HistoryOrder(arr.getInt("id"), arr.getString("img"), arr.getString("name"), arr.getInt("price"), arr.getInt("quantity")));
                     }
-                    if(mList!= null || !mList.isEmpty()){
-                        HistoryOrderAdapter mAdapter = new HistoryOrderAdapter(mList,getContext());
+                    if (mList != null && !mList.isEmpty()) {
+                        HistoryOrderAdapter mAdapter = new HistoryOrderAdapter(mList, getContext());
                         recyclerView.setAdapter(mAdapter);
                         tvIsOrder.setVisibility(View.GONE);
-                    }else tvIsOrder.setVisibility(View.VISIBLE);
+                    } else tvIsOrder.setVisibility(View.VISIBLE);
 
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -108,12 +108,12 @@ public class  HistoryOrderBottomSheetFragment extends BottomSheetDialogFragment 
             public void onErrorResponse(VolleyError error) {
                 Toast.makeText(getContext(), "Lỗi", Toast.LENGTH_SHORT).show();
             }
-        }){
+        }) {
             @Nullable
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
-                Map<String,String> params = new HashMap<>();
-                params.put("id",account.getId()+"");
+                Map<String, String> params = new HashMap<>();
+                params.put("id", account.getId() + "");
                 return params;
             }
         };

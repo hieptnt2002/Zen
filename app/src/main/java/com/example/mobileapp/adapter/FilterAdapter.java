@@ -16,6 +16,13 @@ import java.util.List;
 public class FilterAdapter extends RecyclerView.Adapter<FilterAdapter.ViewHolder> {
 
     List<String> mList;
+     OnClickBrandFind onClickBrandFind;
+    public interface OnClickBrandFind{
+         void onClick(String name);
+    }
+    public void setOnClickBrandFind(OnClickBrandFind mListener){
+        onClickBrandFind = mListener;
+    }
 
     public FilterAdapter(List<String> mList) {
 
@@ -31,7 +38,8 @@ public class FilterAdapter extends RecyclerView.Adapter<FilterAdapter.ViewHolder
 
     @Override
     public void onBindViewHolder(@NonNull FilterAdapter.ViewHolder holder, int position) {
-        holder.mTextView.setText(mList.get(position).toString());
+        holder.mTextView.setText(mList.get(position));
+        holder.mTextView.setOnClickListener(view->onClickBrandFind.onClick(mList.get(position)));
     }
 
     @Override

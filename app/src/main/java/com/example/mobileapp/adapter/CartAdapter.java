@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.mobileapp.R;
 import com.example.mobileapp.model.Cart;
+import com.example.mobileapp.utils.Utils;
 
 import java.text.NumberFormat;
 import java.util.List;
@@ -123,6 +124,15 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
                     viewHolder.tvQuantity.setText(mCart.getQuantity()+"");
                     onClickQuantity.onCick();
                 }
+            }
+        });
+        viewHolder.tvDelete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mList.remove(i);
+                Utils.saveCart(view.getContext());
+                notifyDataSetChanged();
+                onClickQuantity.onCick();
             }
         });
     }

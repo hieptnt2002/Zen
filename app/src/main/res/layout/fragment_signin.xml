@@ -110,7 +110,14 @@
                 android:paddingStart="15dp"
                 android:textColor="@color/black" />
         </LinearLayout>
-
+        <ProgressBar
+            android:id="@+id/progressbar"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_gravity="center"
+            android:visibility="gone"
+            android:progressTint="@color/purple"
+            />
     </androidx.cardview.widget.CardView>
 
     <RelativeLayout

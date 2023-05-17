@@ -43,8 +43,7 @@ public class AccountFragment extends Fragment {
         tvGmail = view.findViewById(R.id.textView_gmailProfile);
         civImg = view.findViewById(R.id.circleImageView_profile);
         layoutOrder = view.findViewById(R.id.layout_order);
-        layoutIntroduce = view.findViewById(R.id.layout_introduce);
-        layoutVoucher = view.findViewById(R.id.layout_voucher);
+
     }
     private void setDataAccount(){
         SharedPreferences sharedPreferences = view.getContext().getSharedPreferences(Utils.login_success, Context.MODE_PRIVATE);

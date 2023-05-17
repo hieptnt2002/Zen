@@ -1,14 +1,17 @@
 package com.example.mobileapp.fragment.login;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -40,6 +43,7 @@ public class SignupFragment extends Fragment {
     Button btnSignup;
     String name, email, pass;
     LoginMobileApp loginMobileApp;
+    ProgressBar progressBar;
 
     @Nullable
     @Override
@@ -61,6 +65,7 @@ public class SignupFragment extends Fragment {
         edtPass = view.findViewById(R.id.signUP_password);
         btnSignup = view.findViewById(R.id.buttonSignup);
         loginMobileApp = (LoginMobileApp) getActivity();
+        progressBar = view.findViewById(R.id.progressbar);
     }
 
     boolean isCheckExist() {
@@ -93,20 +98,29 @@ public class SignupFragment extends Fragment {
         btnSignup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                name = edtName.getText().toString();
-                email = edtEmail.getText().toString();
-                pass = edtPass.getText().toString();
-                if (name.isEmpty() || email.isEmpty() || pass.isEmpty()) {
-                    Toast.makeText(getContext(), "Không được để trống", Toast.LENGTH_SHORT).show();
-                } else if (isCheckExist())
-                    Toast.makeText(getContext(), "Tài khoản đã tồn tại", Toast.LENGTH_SHORT).show();
-                else eventCreateAcccount();
+                progressBar.setVisibility(View.VISIBLE);
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        name = edtName.getText().toString();
+                        email = edtEmail.getText().toString();
+                        pass = edtPass.getText().toString();
+                        if (name.isEmpty() || email.isEmpty() || pass.isEmpty()) {
+                            Toast.makeText(getContext(), "Không được để trống", Toast.LENGTH_SHORT).show();
+                        } else if(!Patterns.EMAIL_ADDRESS.matcher(email).matches()){
+                            Toast.makeText(getContext(), "Email không hợp lệ", Toast.LENGTH_SHORT).show();
+                        }else if (isCheckExist())
+                            Toast.makeText(getContext(), "Tài khoản đã tồn tại", Toast.LENGTH_SHORT).show();
+                        else eventCreateAcccount();
+                        progressBar.setVisibility(View.GONE);
+                    }
+                }, 3000);
             }
         });
     }
 
     private void eventCreateAcccount() {
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, Constants.API_URL_CREATE_ACCOUNT, new Response.Listener<String>() {
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, Constants.API + "sign__up.php", new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 if (response.equals("sign up successful")) {
@@ -139,7 +153,7 @@ public class SignupFragment extends Fragment {
     }
 
     public void loadListAccount() {
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, Constants.API_URL_LIST_ACCOUNT, new Response.Listener<String>() {
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, Constants.API + "list_account.php", new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 try {

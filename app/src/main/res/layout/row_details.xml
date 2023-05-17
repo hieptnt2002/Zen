@@ -11,5 +11,5 @@
         android:layout_height="250dp"
         android:scaleType="centerCrop"
         android:padding="10dp"
-        app:srcCompat="@drawable/banner2" />
+        android:background="#23676767" />
 </LinearLayout>

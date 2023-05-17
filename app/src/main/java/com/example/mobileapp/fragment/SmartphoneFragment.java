@@ -60,6 +60,8 @@ public class SmartphoneFragment extends Fragment {
     View view;
     LinearLayout llHighFilter, llLowFilter, llPercentFilter;
     ProgressBar progressBar;
+    ArrayList<Product> mList;
+
 
     @Nullable
     @Override
@@ -86,8 +88,9 @@ public class SmartphoneFragment extends Fragment {
         progressBar = view.findViewById(R.id.load_product);
 
     }
-    void search(){
-        ArrayAdapter suggestAdapter = new ArrayAdapter(getContext(), android.R.layout.simple_list_item_1,Utils.suggestSearchList);
+
+    void search() {
+        ArrayAdapter suggestAdapter = new ArrayAdapter(getContext(), android.R.layout.simple_list_item_1, Utils.suggestSearchList);
         inputSearch.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -102,14 +105,16 @@ public class SmartphoneFragment extends Fragment {
 
             @Override
             public void afterTextChanged(Editable s) {
-                smartAdapter.filterNameProduct(inputSearch.getText().toString());
+                if (smartAdapter != null) {
+                    smartAdapter.filterNameProduct(inputSearch.getText().toString());
+                }
             }
         });
         inputSearch.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if(actionId == EditorInfo.IME_ACTION_SEARCH || actionId == EditorInfo.IME_ACTION_DONE
-                        || event.getAction() == KeyEvent.ACTION_DOWN || event.getAction() == KeyEvent.KEYCODE_ENTER){
+                if (actionId == EditorInfo.IME_ACTION_SEARCH || actionId == EditorInfo.IME_ACTION_DONE
+                        || event.getAction() == KeyEvent.ACTION_DOWN || event.getAction() == KeyEvent.KEYCODE_ENTER) {
 
                     Bundle bundle = new Bundle();
                     bundle.putString("name", String.valueOf(inputSearch.getText()));
@@ -123,6 +128,7 @@ public class SmartphoneFragment extends Fragment {
             }
         });
     }
+
     public void replaceFragment(Fragment fragment) {
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
         transaction.replace(R.id.content_frame, fragment);
@@ -133,7 +139,7 @@ public class SmartphoneFragment extends Fragment {
         llHighFilter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                smartAdapter.filterPriceProductHigh();
+                if (smartAdapter != null) smartAdapter.filterPriceProductHigh();
                 llHighFilter.setBackgroundDrawable(ContextCompat.getDrawable(getContext(), R.drawable.background_filter_click));
                 llLowFilter.setBackgroundDrawable(ContextCompat.getDrawable(getContext(), R.drawable.border_filter));
                 llPercentFilter.setBackgroundDrawable(ContextCompat.getDrawable(getContext(), R.drawable.border_filter));
@@ -142,7 +148,7 @@ public class SmartphoneFragment extends Fragment {
         llLowFilter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                smartAdapter.filterPriceProductLow();
+                if (smartAdapter != null) smartAdapter.filterPriceProductLow();
                 llHighFilter.setBackgroundDrawable(ContextCompat.getDrawable(getContext(), R.drawable.border_filter));
                 llLowFilter.setBackgroundDrawable(ContextCompat.getDrawable(getContext(), R.drawable.background_filter_click));
                 llPercentFilter.setBackgroundDrawable(ContextCompat.getDrawable(getContext(), R.drawable.border_filter));
@@ -152,7 +158,7 @@ public class SmartphoneFragment extends Fragment {
         llPercentFilter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                smartAdapter.filterPriceProductPercent();
+                if (smartAdapter != null) smartAdapter.filterPriceProductPercent();
                 llHighFilter.setBackgroundDrawable(ContextCompat.getDrawable(getContext(), R.drawable.border_filter));
                 llLowFilter.setBackgroundDrawable(ContextCompat.getDrawable(getContext(), R.drawable.border_filter));
                 llPercentFilter.setBackgroundDrawable(ContextCompat.getDrawable(getContext(), R.drawable.background_filter_click));
@@ -161,7 +167,7 @@ public class SmartphoneFragment extends Fragment {
     }
 
     void slider() {
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, Constants.API_URL_BANNER_SMART, new Response.Listener<String>() {
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, Constants.API + "slider_smart.php", new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 ArrayList<Banner> bannerList = new ArrayList<>();
@@ -225,15 +231,15 @@ public class SmartphoneFragment extends Fragment {
         rvSmartphone.setLayoutManager(new GridLayoutManager(getContext(), 2));
         rvSmartphone.setNestedScrollingEnabled(false);
 
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, Constants.API_URL_SMARTPHONE, new Response.Listener<String>() {
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, Constants.API + "data_smartphone.php", new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                ArrayList<Product> mList = new ArrayList<>();
+                mList = new ArrayList<>();
                 try {
                     JSONArray jsonArray = new JSONArray(response);
                     for (int i = 0; i < jsonArray.length(); i++) {
                         JSONObject arr = jsonArray.getJSONObject(i);
-                        mList.add(new Product(arr.getInt("id"), arr.getString("anh"), arr.getString("ten_sp"), arr.getInt("gia_sp"), arr.getInt("gia_km"), arr.getString("quatang"),arr.getString("mota"),arr.getInt("loaisp_id")));
+                        mList.add(new Product(arr.getInt("id"), arr.getString("anh"), arr.getString("ten_sp"), arr.getInt("gia_sp"), arr.getInt("gia_km"), arr.getString("quatang"), arr.getString("mota"), arr.getInt("loaisp_id")));
 
                     }
                     smartAdapter = new ProductAdapter(mList, getContext());
@@ -247,17 +253,19 @@ public class SmartphoneFragment extends Fragment {
                             }
                         }
                     });
-                    int itemHeight = getResources().getDimensionPixelSize(R.dimen.item_height_product); // chiều cao của một item
-                    int numItems = 0 ;
-                    if(smartAdapter.getItemCount() % 2 == 0){
-                         numItems = smartAdapter.getItemCount() / 2; // số lượng item trong RecyclerView
-                    }
-                    else  numItems = (smartAdapter.getItemCount() + 1) / 2; // số lượng item trong RecyclerView
+                    if (smartAdapter != null) {
+                        int itemHeight = getResources().getDimensionPixelSize(R.dimen.item_height_product); // chiều cao của một item
+                        int numItems = 0;
+                        if (smartAdapter.getItemCount() % 2 == 0) {
+                            numItems = smartAdapter.getItemCount() / 2; // số lượng item trong RecyclerView
+                        } else
+                            numItems = (smartAdapter.getItemCount() + 1) / 2; // số lượng item trong RecyclerView
 
-                    int totalHeight = itemHeight * numItems; // tổng chiều cao của tất cả các item trong RecyclerView
-                    ViewGroup.LayoutParams params = rvSmartphone.getLayoutParams();
-                    params.height = totalHeight;
-                    rvSmartphone.setLayoutParams(params);
+                        int totalHeight = itemHeight * numItems; // tổng chiều cao của tất cả các item trong RecyclerView
+                        ViewGroup.LayoutParams params = rvSmartphone.getLayoutParams();
+                        params.height = totalHeight;
+                        rvSmartphone.setLayoutParams(params);
+                    }
                     progressBar.setVisibility(View.INVISIBLE);
 
                 } catch (JSONException e) {

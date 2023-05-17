@@ -49,10 +49,16 @@ public class ZenithActivity extends AppCompatActivity implements NavigationView.
     BottomNavigationView bottomNavigationView;
     TextView tv_num_cart, tvUsername;
     LinearLayout lnCart;
-    LinearLayout layoutLogout;
+    TextView tvCheckLogin;
     ImageView imgLogo;
     FloatingActionButton floatingActionButton;
+    boolean isLogin = false;
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        tv_num_cart.setText(String.valueOf(Utils.listCart.size()));
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,7 +73,7 @@ public class ZenithActivity extends AppCompatActivity implements NavigationView.
                 mDrawerLayout.openDrawer(GravityCompat.START);
             }
         });
-
+        checkLogin();
         replaceFragment(new HomeFragment());
         mNavigationView.getMenu().findItem(R.id.nav_home).setChecked(true);
         bottomNavigationView.getMenu().findItem(R.id.nav_home).setChecked(true);
@@ -79,11 +85,11 @@ public class ZenithActivity extends AppCompatActivity implements NavigationView.
 
     private void initGUI() {
         imgLogo = findViewById(R.id.img_logo);
-        imgLogo.setOnClickListener(view->
-                startActivity(new Intent(this,ZenithActivity.class)));
+        imgLogo.setOnClickListener(view ->
+                startActivity(new Intent(this, ZenithActivity.class)));
         floatingActionButton = findViewById(R.id.button_bottomCart);
-        floatingActionButton.setOnClickListener(view->
-                startActivity(new Intent(this,CartActivity.class)));
+        floatingActionButton.setOnClickListener(view ->
+                startActivity(new Intent(this, CartActivity.class)));
         mNavigationView = findViewById(R.id.nav_header);
         mDrawerLayout = findViewById(R.id.header_draw);
         mToolbar = findViewById(R.id.header_toolbar);
@@ -97,40 +103,57 @@ public class ZenithActivity extends AppCompatActivity implements NavigationView.
         tv_num_cart.setText(String.valueOf(Utils.listCart.size()));
         View view = mNavigationView.getHeaderView(0);
         tvUsername = view.findViewById(R.id.text_user);
-        layoutLogout = findViewById(R.id.layout_logout);
+        tvCheckLogin = findViewById(R.id.textView_checkLogin);
 
+
+    }
+    private void checkLogin(){
         SharedPreferences prefts = getSharedPreferences(Utils.login_success, MODE_PRIVATE);
         String object = prefts.getString("object", null);
+
         Gson gson = new Gson();
         if (object != null) {
-                 Account account = gson.fromJson(object, Account.class);
-                tvUsername.setText(account.getName());
-                // Đọc chuỗi JSON từ SharedPreferences
-                SharedPreferences list = getSharedPreferences(account.getName(), MODE_PRIVATE);
-                String json = list.getString(account.getName(), null);
-                // Chuyển đổi chuỗi JSON thành ArrayList bằng Gson
-                Type type = new TypeToken<List<Cart>>() {
-                }.getType();
-                if (Utils.listCart.isEmpty() && json != null) {
-                    Utils.listCart = gson.fromJson(json, type);
-                    tv_num_cart.setText(String.valueOf(Utils.listCart.size()));
-                }
-        }
-        layoutLogout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Utils.listCart.clear();
-                SharedPreferences.Editor editor = getSharedPreferences(Utils.login_success, MODE_PRIVATE).edit();
-                editor.putBoolean("isLoggedIn", false);
-                editor.remove("object");
-                editor.apply();
-                Intent intent = new Intent(getApplicationContext(), LoginMobileApp.class);
-                intent.putExtra("currentItem", 1);
-                startActivity(intent);
+            Account account = gson.fromJson(object, Account.class);
+            tvUsername.setText(account.getName());
+            // Đọc chuỗi JSON từ SharedPreferences
+            SharedPreferences list = getSharedPreferences(account.getName(), MODE_PRIVATE);
+            String json = list.getString(account.getName(), null);
+            // Chuyển đổi chuỗi JSON thành ArrayList bằng Gson
+            Type type = new TypeToken<List<Cart>>() {
+            }.getType();
+            if (Utils.listCart.isEmpty() && json != null) {
+                Utils.listCart = gson.fromJson(json, type);
+                tv_num_cart.setText(String.valueOf(Utils.listCart.size()));
             }
-        });
+            isLogin = true;
+        }
+       if(isLogin == true){
+           tvCheckLogin.setOnClickListener(new View.OnClickListener() {
+               @Override
+               public void onClick(View v) {
+                   Utils.listCart.clear();
+                   SharedPreferences.Editor editor = getSharedPreferences(Utils.login_success, MODE_PRIVATE).edit();
+                   editor.putBoolean("isLoggedIn", false);
+                   editor.remove("object");
+                   editor.apply();
+                   Intent intent = new Intent(getApplicationContext(), LoginMobileApp.class);
+                   intent.putExtra("currentItem", 1);
+                   startActivity(intent);
+               }
+           });
+       }else {
+           tvCheckLogin.setText("Sign In | Regester");
+           tvCheckLogin.setCompoundDrawablesRelativeWithIntrinsicBounds(null,null,null,null);
+           tvCheckLogin.setOnClickListener(new View.OnClickListener() {
+               @Override
+               public void onClick(View v) {
+                   Intent intent = new Intent(getApplicationContext(), LoginMobileApp.class);
+                   intent.putExtra("currentItem", 1);
+                   startActivity(intent);
+               }
+           });
+       }
     }
-
     public void eventClickBottomNav() {
         bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override

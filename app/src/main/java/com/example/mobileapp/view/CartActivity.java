@@ -30,8 +30,8 @@ import java.util.Locale;
 
 public class CartActivity extends AppCompatActivity {
     RecyclerView rvCart;
-    TextView tvOut, tvTotal;
-    LinearLayout layoutPay;
+    TextView tvOut, tvTotal,tvEmptyCart;
+    LinearLayout layoutPay,layoutChooseOther;
     Locale locale = new Locale("vi", "VN"); // Thiết lập địa phương Việt Nam
     NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(locale);
     int total = 0;
@@ -46,6 +46,7 @@ public class CartActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cart);
         initGUI();
+
         tvOut.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -56,12 +57,12 @@ public class CartActivity extends AppCompatActivity {
         rvCart.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
 
 
-        if (Utils.listCart != null) {
+        if (Utils.listCart != null && !Utils.listCart.isEmpty()) {
             for (int i = 0; i < Utils.listCart.size(); i++) {
                 total += Utils.listCart.get(i).getSaleprice() * Utils.listCart.get(i).getQuantity();
                 Utils.total_pay = total;
             }
-        }
+        }else tvEmptyCart.setVisibility(View.VISIBLE);
 
         tvTotal.setText(String.valueOf(currencyFormatter.format(total)));
         cartAdapter = new CartAdapter(Utils.listCart,getApplicationContext());
@@ -70,12 +71,12 @@ public class CartActivity extends AppCompatActivity {
             @Override
             public void onCick() {
                 int total = 0;
-                if (Utils.listCart != null) {
+                if (Utils.listCart != null && !Utils.listCart.isEmpty()) {
                     for (int i = 0; i < Utils.listCart.size(); i++) {
                         total += Utils.listCart.get(i).getSaleprice() * Utils.listCart.get(i).getQuantity();
                         Utils.total_pay = total;
                     }
-                }
+                }else tvEmptyCart.setVisibility(View.VISIBLE);
                 tvTotal.setText(String.valueOf(currencyFormatter.format(total)));
                 Utils.saveCart(getApplicationContext());
 
@@ -90,6 +91,9 @@ public class CartActivity extends AppCompatActivity {
         tvOut = findViewById(R.id.textView_out);
         tvTotal = findViewById(R.id.textView_total);
         layoutPay = findViewById(R.id.btn_add_pay);
+        tvEmptyCart = findViewById(R.id.tvCart_null);
+        layoutChooseOther = findViewById(R.id.btn_add_productOther);
+        layoutChooseOther.setOnClickListener(view-> startActivity(new Intent(this,ZenithActivity.class)));
     }
 
     private void clickToOrder() {
