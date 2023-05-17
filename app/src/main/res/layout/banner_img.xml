@@ -9,5 +9,6 @@
         android:layout_width="match_parent"
         android:layout_height="170dp"
         android:scaleType="fitXY"
-        app:srcCompat="@drawable/banner1" />
+        android:background="#1E676767"
+        />
 </LinearLayout>

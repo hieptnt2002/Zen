@@ -94,7 +94,7 @@ public class HomeFragment extends Fragment {
         loadDataRvLap();
         loadDataRvFilterLap();
         search();
-         return view;
+        return view;
 
     }
 
@@ -113,8 +113,9 @@ public class HomeFragment extends Fragment {
         rvFilter_Smartphone = view.findViewById(R.id.rv_filter_smartphoneHome);
         rvFilter_Laptop = view.findViewById(R.id.rv_filter_laptopHome);
     }
-    void search(){
-        suggestAdapter = new ArrayAdapter(getContext(), android.R.layout.simple_list_item_1,Utils.suggestSearchList);
+
+    void search() {
+        suggestAdapter = new ArrayAdapter(getContext(), android.R.layout.simple_list_item_1, Utils.suggestSearchList);
         inputSearch.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -136,8 +137,8 @@ public class HomeFragment extends Fragment {
         inputSearch.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if(actionId == EditorInfo.IME_ACTION_SEARCH || actionId == EditorInfo.IME_ACTION_DONE
-                        || event.getAction() == KeyEvent.ACTION_DOWN || event.getAction() == KeyEvent.KEYCODE_ENTER){
+                if (actionId == EditorInfo.IME_ACTION_SEARCH || actionId == EditorInfo.IME_ACTION_DONE
+                        || event.getAction() == KeyEvent.ACTION_DOWN || event.getAction() == KeyEvent.KEYCODE_ENTER) {
 
                     Bundle bundle = new Bundle();
                     bundle.putString("name", String.valueOf(inputSearch.getText()));
@@ -159,10 +160,10 @@ public class HomeFragment extends Fragment {
         rvFilter_Laptop.setHasFixedSize(true);
         rvFilter_Smartphone.setHasFixedSize(true);
 
-        LinearLayoutManager layoutFilSm =  new LinearLayoutManager(getContext(),LinearLayoutManager.HORIZONTAL,false);
-        LinearLayoutManager layoutSmart = new LinearLayoutManager(getContext(),LinearLayoutManager.HORIZONTAL,false);
-        LinearLayoutManager layoutFillap =  new LinearLayoutManager(getContext(),LinearLayoutManager.HORIZONTAL,false);
-        LinearLayoutManager layoutLap = new LinearLayoutManager(getContext(),LinearLayoutManager.HORIZONTAL,false);
+        LinearLayoutManager layoutFilSm = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
+        LinearLayoutManager layoutSmart = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
+        LinearLayoutManager layoutFillap = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
+        LinearLayoutManager layoutLap = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
         GridLayoutManager layoutCategory = new GridLayoutManager(this.getContext(), 5);
 
         rvFilter_Smartphone.setLayoutManager(layoutFilSm);
@@ -173,7 +174,7 @@ public class HomeFragment extends Fragment {
     }
 
     public void loadDataRvCategory() {
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, Constants.API_URL_CATEGORY, new Response.Listener<String>() {
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, Constants.API + "show_danhmucc.php", new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 ArrayList<Category> categoryList = new ArrayList<>();
@@ -202,7 +203,7 @@ public class HomeFragment extends Fragment {
 
     private void loadDataRvBanner() {
 
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, Constants.API_URL_BANNER, new Response.Listener<String>() {
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, Constants.API + "slider__home.php", new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 ArrayList<Banner> bannerList = new ArrayList<>();
@@ -295,8 +296,9 @@ public class HomeFragment extends Fragment {
         transaction.replace(R.id.content_frame, fragment);
         transaction.commit();
     }
+
     private void loadDataRvFilSm() {
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, Constants.API_URL_TH_SMARTPHONE, new Response.Listener<String>() {
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, Constants.API + "thuonghieu_dienthoai.php", new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 List<String> mList = new ArrayList<>();
@@ -311,6 +313,16 @@ public class HomeFragment extends Fragment {
                     }
                     FilterAdapter mFilterAdapter = new FilterAdapter(mList);
                     rvFilter_Smartphone.setAdapter(mFilterAdapter);
+                    mFilterAdapter.setOnClickBrandFind(new FilterAdapter.OnClickBrandFind() {
+                        @Override
+                        public void onClick(String name) {
+                            Bundle bundle = new Bundle();
+                            bundle.putString("name", name);
+                            SearchFragment searchFragment = new SearchFragment();
+                            searchFragment.setArguments(bundle);
+                            replaceFragment(searchFragment);
+                        }
+                    });
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -325,7 +337,7 @@ public class HomeFragment extends Fragment {
     }
 
     public void loadDataRvSmart() {
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, Constants.API_URL_SMARTPHONE, new Response.Listener<String>() {
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, Constants.API + "data_smartphone.php", new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 ArrayList<Product> mList = new ArrayList<>();
@@ -333,7 +345,7 @@ public class HomeFragment extends Fragment {
                     JSONArray jsonArray = new JSONArray(response);
                     for (int i = 0; i < jsonArray.length(); i++) {
                         JSONObject arr = jsonArray.getJSONObject(i);
-                        mList.add(new Product(arr.getInt("id"), arr.getString("anh"), arr.getString("ten_sp"), arr.getInt("gia_sp"), arr.getInt("gia_km"), arr.getString("quatang"),arr.getString("mota"),arr.getInt("loaisp_id")));
+                        mList.add(new Product(arr.getInt("id"), arr.getString("anh"), arr.getString("ten_sp"), arr.getInt("gia_sp"), arr.getInt("gia_km"), arr.getString("quatang"), arr.getString("mota"), arr.getInt("loaisp_id")));
                         Utils.suggestSearchList.add(arr.getString("ten_sp"));
 
                     }
@@ -343,7 +355,7 @@ public class HomeFragment extends Fragment {
                     smartAdapter.setOnClickAddToCart(new ProductAdapter.OnClickAddCartListener() {
                         @Override
                         public void onClickAddToCart() {
-                            if(Utils.listCart.size() !=0){
+                            if (Utils.listCart.size() != 0) {
                                 TextView tvCart = getActivity().findViewById(R.id.num_cart);
                                 tvCart.setText(String.valueOf(Utils.listCart.size()));
                             }
@@ -364,7 +376,7 @@ public class HomeFragment extends Fragment {
     }
 
     public void loadDataRvLap() {
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, Constants.API_URL_LAPTOP, new Response.Listener<String>() {
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, Constants.API + "data_laptop.php", new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 ArrayList<Product> laptopList = new ArrayList<>();
@@ -373,7 +385,7 @@ public class HomeFragment extends Fragment {
                     JSONArray jsonArray = new JSONArray(response);
                     for (int i = 0; i < jsonArray.length(); i++) {
                         JSONObject arr = jsonArray.getJSONObject(i);
-                        laptopList.add(new Product(arr.getInt("id"), arr.getString("anh"), arr.getString("ten_sp"), arr.getInt("gia_sp"), arr.getInt("gia_km"), arr.getString("quatang"),arr.getString("mota"),arr.getInt("loaisp_id")));
+                        laptopList.add(new Product(arr.getInt("id"), arr.getString("anh"), arr.getString("ten_sp"), arr.getInt("gia_sp"), arr.getInt("gia_km"), arr.getString("quatang"), arr.getString("mota"), arr.getInt("loaisp_id")));
                         Utils.suggestSearchList.add(arr.getString("ten_sp"));
                     }
 
@@ -382,10 +394,10 @@ public class HomeFragment extends Fragment {
                     laptopAdapter.setOnClickAddToCart(new ProductAdapter.OnClickAddCartListener() {
                         @Override
                         public void onClickAddToCart() {
-                         if(Utils.listCart.size() !=0){
-                             TextView tvCart = getActivity().findViewById(R.id.num_cart);
-                             tvCart.setText(String.valueOf(Utils.listCart.size()));
-                         }
+                            if (Utils.listCart.size() != 0) {
+                                TextView tvCart = getActivity().findViewById(R.id.num_cart);
+                                tvCart.setText(String.valueOf(Utils.listCart.size()));
+                            }
                         }
                     });
                     autoSlideRv(rvLaptop);
@@ -404,7 +416,7 @@ public class HomeFragment extends Fragment {
     }
 
     private void loadDataRvFilterLap() {
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, Constants.API_URL_TH_LAPTOP, new Response.Listener<String>() {
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, Constants.API + "thuonghieu_laptop.php", new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 List<String> mList = new ArrayList<>();
@@ -419,6 +431,16 @@ public class HomeFragment extends Fragment {
                     }
                     FilterAdapter mFilterAdapter = new FilterAdapter(mList);
                     rvFilter_Laptop.setAdapter(mFilterAdapter);
+                    mFilterAdapter.setOnClickBrandFind(new FilterAdapter.OnClickBrandFind() {
+                        @Override
+                        public void onClick(String name) {
+                            Bundle bundle = new Bundle();
+                            bundle.putString("name", name);
+                            SearchFragment searchFragment = new SearchFragment();
+                            searchFragment.setArguments(bundle);
+                            replaceFragment(searchFragment);
+                        }
+                    });
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -431,6 +453,7 @@ public class HomeFragment extends Fragment {
         });
         Volley.newRequestQueue(getContext()).add(stringRequest);
     }
+
     //
     public void autoSlideRv(final RecyclerView recyclerView) {
         final Handler handler = new Handler();
@@ -453,7 +476,7 @@ public class HomeFragment extends Fragment {
                 handler.postDelayed(this, 5000);
             }
         };
-        handler.postDelayed(runnable,5000);
+        handler.postDelayed(runnable, 5000);
         recyclerView.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {

@@ -62,7 +62,7 @@ public class ProductDetails extends AppCompatActivity {
         Product product = (Product) intent.getSerializableExtra("product");
         getData(product);
         if (product.getLoaisp_id() == 1) {
-            loadDataBanner(product.getId() + "", Constants.API_URL_SMARTPHONE_DETAILS);
+            loadDataBanner(product.getId() + "", Constants.API + "images_phone.php");
         } else if (product.getLoaisp_id() == 2) {
             loadDataBanner(product.getId() + "", "");
         }

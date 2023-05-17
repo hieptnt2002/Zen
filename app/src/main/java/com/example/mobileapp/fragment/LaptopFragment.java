@@ -54,8 +54,8 @@ public class LaptopFragment extends Fragment {
     TextInputLayout inputLayout;
     ViewPager viewPager;
     CircleIndicator circleIndicator;
-    RecyclerView rvSmartphone;
-    ProductAdapter smartAdapter;
+    RecyclerView rvLaptop;
+    ProductAdapter lapTopAdapter;
     BannerChildAdapter bannerAdapter;
     View view;
     LinearLayout llHighFilter, llLowFilter, llPercentFilter;
@@ -79,15 +79,16 @@ public class LaptopFragment extends Fragment {
         inputLayout = view.findViewById(R.id.textInputLayout);
         viewPager = view.findViewById(R.id.slider_smartphone);
         circleIndicator = view.findViewById(R.id.circleIndicator_sm);
-        rvSmartphone = view.findViewById(R.id.recycleView_smartphone);
+        rvLaptop = view.findViewById(R.id.recycleView_smartphone);
         llHighFilter = view.findViewById(R.id.box_caothap);
         llLowFilter = view.findViewById(R.id.box_thapcao);
         llPercentFilter = view.findViewById(R.id.box_percen);
         progressBar = view.findViewById(R.id.load_product);
 
     }
-    void search(){
-        ArrayAdapter suggestAdapter = new ArrayAdapter(getContext(), android.R.layout.simple_list_item_1,Utils.suggestSearchList);
+
+    void search() {
+        ArrayAdapter suggestAdapter = new ArrayAdapter(getContext(), android.R.layout.simple_list_item_1, Utils.suggestSearchList);
         inputSearch.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -102,14 +103,15 @@ public class LaptopFragment extends Fragment {
 
             @Override
             public void afterTextChanged(Editable s) {
-                smartAdapter.filterNameProduct(inputSearch.getText().toString());
+                if (lapTopAdapter != null)
+                    lapTopAdapter.filterNameProduct(inputSearch.getText().toString());
             }
         });
         inputSearch.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if(actionId == EditorInfo.IME_ACTION_SEARCH || actionId == EditorInfo.IME_ACTION_DONE
-                        || event.getAction() == KeyEvent.ACTION_DOWN || event.getAction() == KeyEvent.KEYCODE_ENTER){
+                if (actionId == EditorInfo.IME_ACTION_SEARCH || actionId == EditorInfo.IME_ACTION_DONE
+                        || event.getAction() == KeyEvent.ACTION_DOWN || event.getAction() == KeyEvent.KEYCODE_ENTER) {
 
                     Bundle bundle = new Bundle();
                     bundle.putString("name", String.valueOf(inputSearch.getText()));
@@ -123,6 +125,7 @@ public class LaptopFragment extends Fragment {
             }
         });
     }
+
     public void replaceFragment(Fragment fragment) {
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
         transaction.replace(R.id.content_frame, fragment);
@@ -133,7 +136,7 @@ public class LaptopFragment extends Fragment {
         llHighFilter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                smartAdapter.filterPriceProductHigh();
+                if (lapTopAdapter != null) lapTopAdapter.filterPriceProductHigh();
                 llHighFilter.setBackgroundDrawable(ContextCompat.getDrawable(getContext(), R.drawable.background_filter_click));
                 llLowFilter.setBackgroundDrawable(ContextCompat.getDrawable(getContext(), R.drawable.border_filter));
                 llPercentFilter.setBackgroundDrawable(ContextCompat.getDrawable(getContext(), R.drawable.border_filter));
@@ -142,7 +145,7 @@ public class LaptopFragment extends Fragment {
         llLowFilter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                smartAdapter.filterPriceProductLow();
+                if (lapTopAdapter != null) lapTopAdapter.filterPriceProductLow();
                 llHighFilter.setBackgroundDrawable(ContextCompat.getDrawable(getContext(), R.drawable.border_filter));
                 llLowFilter.setBackgroundDrawable(ContextCompat.getDrawable(getContext(), R.drawable.background_filter_click));
                 llPercentFilter.setBackgroundDrawable(ContextCompat.getDrawable(getContext(), R.drawable.border_filter));
@@ -152,7 +155,7 @@ public class LaptopFragment extends Fragment {
         llPercentFilter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                smartAdapter.filterPriceProductPercent();
+                if (lapTopAdapter != null) lapTopAdapter.filterPriceProductPercent();
                 llHighFilter.setBackgroundDrawable(ContextCompat.getDrawable(getContext(), R.drawable.border_filter));
                 llLowFilter.setBackgroundDrawable(ContextCompat.getDrawable(getContext(), R.drawable.border_filter));
                 llPercentFilter.setBackgroundDrawable(ContextCompat.getDrawable(getContext(), R.drawable.background_filter_click));
@@ -161,7 +164,7 @@ public class LaptopFragment extends Fragment {
     }
 
     void slider() {
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, Constants.API_URL_BANNER_LAPTOP, new Response.Listener<String>() {
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, Constants.API + "slider_laptop.php", new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 ArrayList<Banner> bannerList = new ArrayList<>();
@@ -221,11 +224,11 @@ public class LaptopFragment extends Fragment {
     }
 
     public void loadDataRvSmart() {
-        rvSmartphone.setHasFixedSize(true);
-        rvSmartphone.setLayoutManager(new GridLayoutManager(getContext(), 2));
-        rvSmartphone.setNestedScrollingEnabled(false);
+        rvLaptop.setHasFixedSize(true);
+        rvLaptop.setLayoutManager(new GridLayoutManager(getContext(), 2));
+        rvLaptop.setNestedScrollingEnabled(false);
 
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, Constants.API_URL_LAPTOP, new Response.Listener<String>() {
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, Constants.API + "data_laptop.php", new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 ArrayList<Product> mList = new ArrayList<>();
@@ -233,11 +236,11 @@ public class LaptopFragment extends Fragment {
                     JSONArray jsonArray = new JSONArray(response);
                     for (int i = 0; i < jsonArray.length(); i++) {
                         JSONObject arr = jsonArray.getJSONObject(i);
-                        mList.add(new Product(arr.getInt("id"), arr.getString("anh"), arr.getString("ten_sp"), arr.getInt("gia_sp"), arr.getInt("gia_km"), arr.getString("quatang"),arr.getString("mota"),arr.getInt("loaisp_id")));
+                        mList.add(new Product(arr.getInt("id"), arr.getString("anh"), arr.getString("ten_sp"), arr.getInt("gia_sp"), arr.getInt("gia_km"), arr.getString("quatang"), arr.getString("mota"), arr.getInt("loaisp_id")));
                     }
-                    smartAdapter = new ProductAdapter(mList, getContext());
-                    rvSmartphone.setAdapter(smartAdapter);
-                    smartAdapter.setOnClickAddToCart(new ProductAdapter.OnClickAddCartListener() {
+                    lapTopAdapter = new ProductAdapter(mList, getContext());
+                    rvLaptop.setAdapter(lapTopAdapter);
+                    lapTopAdapter.setOnClickAddToCart(new ProductAdapter.OnClickAddCartListener() {
                         @Override
                         public void onClickAddToCart() {
                             if (Utils.listCart.size() != 0) {
@@ -246,17 +249,19 @@ public class LaptopFragment extends Fragment {
                             }
                         }
                     });
-                    int itemHeight = getResources().getDimensionPixelSize(R.dimen.item_height_product); // chiều cao của một item
-                    int numItems = 0 ;
-                    if(smartAdapter.getItemCount() % 2 == 0){
-                        numItems = smartAdapter.getItemCount() / 2; // số lượng item trong RecyclerView
-                    }
-                    else  numItems = (smartAdapter.getItemCount() + 1) / 2; // số lượng item trong RecyclerView
+                    if (lapTopAdapter != null) {
+                        int itemHeight = getResources().getDimensionPixelSize(R.dimen.item_height_product); // chiều cao của một item
+                        int numItems = 0;
+                        if (lapTopAdapter.getItemCount() % 2 == 0) {
+                            numItems = lapTopAdapter.getItemCount() / 2; // số lượng item trong RecyclerView
+                        } else
+                            numItems = (lapTopAdapter.getItemCount() + 1) / 2; // số lượng item trong RecyclerView
 
-                    int totalHeight = itemHeight * numItems; // tổng chiều cao của tất cả các item trong RecyclerView
-                    ViewGroup.LayoutParams params = rvSmartphone.getLayoutParams();
-                    params.height = totalHeight;
-                    rvSmartphone.setLayoutParams(params);
+                        int totalHeight = itemHeight * numItems; // tổng chiều cao của tất cả các item trong RecyclerView
+                        ViewGroup.LayoutParams params = rvLaptop.getLayoutParams();
+                        params.height = totalHeight;
+                        rvLaptop.setLayoutParams(params);
+                    }
                     progressBar.setVisibility(View.INVISIBLE);
 
                 } catch (JSONException e) {
